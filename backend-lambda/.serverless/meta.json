@@ -1,12 +1,2764 @@
 {
-  "unknown": {
+  "/Users/yj/Workspaces/NexCast/backend-lambda/serverless.yml": {
     "versionFramework": "4.23.0",
-    "command": [],
+    "servicePath": "/Users/yj/Workspaces/NexCast/backend-lambda/serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "org": "neuralripper",
+      "app": "nexcast-lambda",
+      "service": "NexCast",
+      "provider": {
+        "name": "aws",
+        "runtime": "python3.11",
+        "region": "us-east-1",
+        "environment": {
+          "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+          "DB_NAME": "nexcast",
+          "DB_USER": "admin",
+          "DB_PASSWORD": "<REDACTED>",
+          "DB_PORT": "3306",
+          "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+          "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+          "S3_BUCKET_NAME": "nexcast-frames"
+        },
+        "iam": {
+          "role": {
+            "statements": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "cognito-idp:*"
+                ],
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "s3:PutObject",
+                  "s3:GetObject",
+                  "s3:DeleteObject"
+                ],
+                "Resource": "arn:aws:s3:::nexcast-frames/*"
+              }
+            ]
+          }
+        },
+        "httpApi": {
+          "cors": true,
+          "authorizers": {
+            "cognitoAuthorizer": {
+              "type": "jwt",
+              "identitySource": "$request.header.Authorization",
+              "issuerUrl": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_E1etK3vnj",
+              "audience": "6jctk3ttkjn5pn5d0qh294v81l"
+            }
+          }
+        },
+        "stage": "dev",
+        "versionFunctions": true,
+        "compiledCloudFormationTemplate": {
+          "AWSTemplateFormatVersion": "2010-09-09",
+          "Description": "The AWS CloudFormation template for this Serverless application",
+          "Resources": {
+            "HealthLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/NexCast-dev-health"
+              }
+            },
+            "SessionLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/NexCast-dev-session"
+              }
+            },
+            "FrameLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/NexCast-dev-frame"
+              }
+            },
+            "HistoryLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/NexCast-dev-history"
+              }
+            },
+            "IamRoleLambdaExecution": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": [
+                          "lambda.amazonaws.com"
+                        ]
+                      },
+                      "Action": [
+                        "sts:AssumeRole"
+                      ]
+                    }
+                  ]
+                },
+                "Policies": [
+                  {
+                    "PolicyName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          "NexCast",
+                          "dev",
+                          "lambda"
+                        ]
+                      ]
+                    },
+                    "PolicyDocument": {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:CreateLogStream",
+                            "logs:CreateLogGroup",
+                            "logs:TagResource"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/NexCast-dev*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:PutLogEvents"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/NexCast-dev*:*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "cognito-idp:*"
+                          ],
+                          "Resource": "*"
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "s3:PutObject",
+                            "s3:GetObject",
+                            "s3:DeleteObject"
+                          ],
+                          "Resource": "arn:aws:s3:::nexcast-frames/*"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "Path": "/",
+                "RoleName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "NexCast",
+                      "dev",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "lambdaRole"
+                    ]
+                  ]
+                }
+              }
+            },
+            "PythonRequirementsLambdaLayer": {
+              "Type": "AWS::Lambda::LayerVersion",
+              "Properties": {
+                "Content": {
+                  "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+                  "S3Key": "serverless/NexCast/dev/1763083817061-2025-11-14T01:30:17.061Z/pythonRequirements.zip"
+                },
+                "LayerName": "NexCast-dev-python-requirements",
+                "Description": "Python requirements generated by serverless-python-requirements.",
+                "CompatibleRuntimes": [
+                  "python3.11"
+                ]
+              }
+            },
+            "HealthLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+                  "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+                },
+                "Handler": "functions/health.handler",
+                "Runtime": "python3.11",
+                "FunctionName": "NexCast-dev-health",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                    "DB_NAME": "nexcast",
+                    "DB_USER": "admin",
+                    "DB_PASSWORD": "<REDACTED>",
+                    "DB_PORT": "3306",
+                    "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                    "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                    "S3_BUCKET_NAME": "nexcast-frames"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                },
+                "Layers": [
+                  {
+                    "Ref": "PythonRequirementsLambdaLayer"
+                  }
+                ]
+              },
+              "DependsOn": [
+                "HealthLogGroup"
+              ]
+            },
+            "SessionLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+                  "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+                },
+                "Handler": "functions/session.handler",
+                "Runtime": "python3.11",
+                "FunctionName": "NexCast-dev-session",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                    "DB_NAME": "nexcast",
+                    "DB_USER": "admin",
+                    "DB_PASSWORD": "<REDACTED>",
+                    "DB_PORT": "3306",
+                    "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                    "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                    "S3_BUCKET_NAME": "nexcast-frames"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                },
+                "Layers": [
+                  {
+                    "Ref": "PythonRequirementsLambdaLayer"
+                  }
+                ]
+              },
+              "DependsOn": [
+                "SessionLogGroup"
+              ]
+            },
+            "FrameLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+                  "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+                },
+                "Handler": "functions/frame.handler",
+                "Runtime": "python3.11",
+                "FunctionName": "NexCast-dev-frame",
+                "MemorySize": 1024,
+                "Timeout": 30,
+                "Environment": {
+                  "Variables": {
+                    "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                    "DB_NAME": "nexcast",
+                    "DB_USER": "admin",
+                    "DB_PASSWORD": "<REDACTED>",
+                    "DB_PORT": "3306",
+                    "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                    "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                    "S3_BUCKET_NAME": "nexcast-frames"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                },
+                "Layers": [
+                  {
+                    "Ref": "PythonRequirementsLambdaLayer"
+                  }
+                ]
+              },
+              "DependsOn": [
+                "FrameLogGroup"
+              ]
+            },
+            "HistoryLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+                  "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+                },
+                "Handler": "functions/history.handler",
+                "Runtime": "python3.11",
+                "FunctionName": "NexCast-dev-history",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                    "DB_NAME": "nexcast",
+                    "DB_USER": "admin",
+                    "DB_PASSWORD": "<REDACTED>",
+                    "DB_PORT": "3306",
+                    "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                    "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                    "S3_BUCKET_NAME": "nexcast-frames"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                },
+                "Layers": [
+                  {
+                    "Ref": "PythonRequirementsLambdaLayer"
+                  }
+                ]
+              },
+              "DependsOn": [
+                "HistoryLogGroup"
+              ]
+            },
+            "HealthLambdaVersionbrwKoEMWlwsG73tIQQhhRRXIzXvib6O6RFdz46ZaI": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "HealthLambdaFunction"
+                },
+                "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+              }
+            },
+            "SessionLambdaVersionUMuauIHkfLglSsfGuZ1RGmjJQEhJnxP3HEW6YIqqIQ": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "SessionLambdaFunction"
+                },
+                "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+              }
+            },
+            "FrameLambdaVersionbeZKxp720h18hNMAMZECjS2I8Suh2uZ7Fcko27tbF8": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "FrameLambdaFunction"
+                },
+                "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+              }
+            },
+            "HistoryLambdaVersionKXQfrrOaqpwriNqTkdjhaiTShlS9sKSBw2n2eSq1FE": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "HistoryLambdaFunction"
+                },
+                "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+              }
+            },
+            "HttpApi": {
+              "Type": "AWS::ApiGatewayV2::Api",
+              "Properties": {
+                "Name": "dev-NexCast",
+                "ProtocolType": "HTTP",
+                "CorsConfiguration": {
+                  "AllowCredentials": "<REDACTED>",
+                  "AllowHeaders": [
+                    "Content-Type",
+                    "X-Amz-Date",
+                    "Authorization",
+                    "X-Api-Key",
+                    "X-Amz-Security-Token",
+                    "X-Amz-User-Agent",
+                    "X-Amzn-Trace-Id"
+                  ],
+                  "AllowMethods": [
+                    "OPTIONS",
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "HEAD",
+                    "DELETE"
+                  ],
+                  "AllowOrigins": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "HttpApiStage": {
+              "Type": "AWS::ApiGatewayV2::Stage",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "StageName": "$default",
+                "AutoDeploy": true,
+                "DefaultRouteSettings": {
+                  "DetailedMetricsEnabled": false
+                }
+              }
+            },
+            "HttpApiAuthorizerCognitoAuthorizer": {
+              "Type": "AWS::ApiGatewayV2::Authorizer",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "Name": "cognitoAuthorizer",
+                "IdentitySource": [
+                  "$request.header.Authorization"
+                ],
+                "AuthorizerType": "JWT",
+                "JwtConfiguration": {
+                  "Audience": [
+                    "6jctk3ttkjn5pn5d0qh294v81l"
+                  ],
+                  "Issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_E1etK3vnj"
+                }
+              }
+            },
+            "HealthLambdaPermissionHttpApi": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "HealthLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "HttpApi"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "HttpApiIntegrationHealth": {
+              "Type": "AWS::ApiGatewayV2::Integration",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "IntegrationType": "AWS_PROXY",
+                "IntegrationUri": {
+                  "Fn::GetAtt": [
+                    "HealthLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "PayloadFormatVersion": "2.0",
+                "TimeoutInMillis": 30000
+              }
+            },
+            "HttpApiRouteGetHealth": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "GET /health",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationHealth"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "DependsOn": "HttpApiIntegrationHealth"
+            },
+            "SessionLambdaPermissionHttpApi": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "SessionLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "HttpApi"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "HttpApiIntegrationSession": {
+              "Type": "AWS::ApiGatewayV2::Integration",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "IntegrationType": "AWS_PROXY",
+                "IntegrationUri": {
+                  "Fn::GetAtt": [
+                    "SessionLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "PayloadFormatVersion": "2.0",
+                "TimeoutInMillis": 30000
+              }
+            },
+            "HttpApiRouteAnySessionProxyVar": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "ANY /session/{proxy+}",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationSession"
+                      }
+                    ]
+                  ]
+                },
+                "AuthorizationType": "JWT",
+                "AuthorizerId": {
+                  "Ref": "HttpApiAuthorizerCognitoAuthorizer"
+                }
+              },
+              "DependsOn": "HttpApiIntegrationSession"
+            },
+            "FrameLambdaPermissionHttpApi": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "FrameLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "HttpApi"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "HttpApiIntegrationFrame": {
+              "Type": "AWS::ApiGatewayV2::Integration",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "IntegrationType": "AWS_PROXY",
+                "IntegrationUri": {
+                  "Fn::GetAtt": [
+                    "FrameLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "PayloadFormatVersion": "2.0",
+                "TimeoutInMillis": 30000
+              }
+            },
+            "HttpApiRouteAnyFrameProxyVar": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "ANY /frame/{proxy+}",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationFrame"
+                      }
+                    ]
+                  ]
+                },
+                "AuthorizationType": "JWT",
+                "AuthorizerId": {
+                  "Ref": "HttpApiAuthorizerCognitoAuthorizer"
+                }
+              },
+              "DependsOn": "HttpApiIntegrationFrame"
+            },
+            "HistoryLambdaPermissionHttpApi": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "HistoryLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "HttpApi"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "HttpApiIntegrationHistory": {
+              "Type": "AWS::ApiGatewayV2::Integration",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "IntegrationType": "AWS_PROXY",
+                "IntegrationUri": {
+                  "Fn::GetAtt": [
+                    "HistoryLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "PayloadFormatVersion": "2.0",
+                "TimeoutInMillis": 30000
+              }
+            },
+            "HttpApiRouteAnyHistoryProxyVar": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "ANY /history/{proxy+}",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationHistory"
+                      }
+                    ]
+                  ]
+                },
+                "AuthorizationType": "JWT",
+                "AuthorizerId": {
+                  "Ref": "HttpApiAuthorizerCognitoAuthorizer"
+                }
+              },
+              "DependsOn": "HttpApiIntegrationHistory"
+            }
+          },
+          "Outputs": {
+            "ServerlessDeploymentBucketName": {
+              "Value": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+              "Export": {
+                "Name": "sls-NexCast-dev-ServerlessDeploymentBucketName"
+              }
+            },
+            "PythonRequirementsLambdaLayerQualifiedArn": {
+              "Description": "Current Lambda layer version",
+              "Value": {
+                "Ref": "PythonRequirementsLambdaLayer"
+              },
+              "Export": {
+                "Name": "sls-NexCast-dev-PythonRequirementsLambdaLayerQualifiedArn"
+              }
+            },
+            "PythonRequirementsLambdaLayerHash": {
+              "Description": "Current Lambda layer hash",
+              "Value": "1321f69a5968bd42b9b5b79597e96e1900be7173",
+              "Export": {
+                "Name": "sls-NexCast-dev-PythonRequirementsLambdaLayerHash"
+              }
+            },
+            "PythonRequirementsLambdaLayerS3Key": {
+              "Description": "Current Lambda layer S3Key",
+              "Value": "serverless/NexCast/dev/1763083817061-2025-11-14T01:30:17.061Z/pythonRequirements.zip",
+              "Export": {
+                "Name": "sls-NexCast-dev-PythonRequirementsLambdaLayerS3Key"
+              }
+            },
+            "HealthLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "HealthLambdaVersionbrwKoEMWlwsG73tIQQhhRRXIzXvib6O6RFdz46ZaI"
+              },
+              "Export": {
+                "Name": "sls-NexCast-dev-HealthLambdaFunctionQualifiedArn"
+              }
+            },
+            "SessionLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "SessionLambdaVersionUMuauIHkfLglSsfGuZ1RGmjJQEhJnxP3HEW6YIqqIQ"
+              },
+              "Export": {
+                "Name": "sls-NexCast-dev-SessionLambdaFunctionQualifiedArn"
+              }
+            },
+            "FrameLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "FrameLambdaVersionbeZKxp720h18hNMAMZECjS2I8Suh2uZ7Fcko27tbF8"
+              },
+              "Export": {
+                "Name": "sls-NexCast-dev-FrameLambdaFunctionQualifiedArn"
+              }
+            },
+            "HistoryLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "HistoryLambdaVersionKXQfrrOaqpwriNqTkdjhaiTShlS9sKSBw2n2eSq1FE"
+              },
+              "Export": {
+                "Name": "sls-NexCast-dev-HistoryLambdaFunctionQualifiedArn"
+              }
+            },
+            "HttpApiId": {
+              "Description": "Id of the HTTP API",
+              "Value": {
+                "Ref": "HttpApi"
+              },
+              "Export": {
+                "Name": "sls-NexCast-dev-HttpApiId"
+              }
+            },
+            "HttpApiUrl": {
+              "Description": "URL of the HTTP API",
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    ".execute-api.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
+                  ]
+                ]
+              },
+              "Export": {
+                "Name": "sls-NexCast-dev-HttpApiUrl"
+              }
+            }
+          }
+        },
+        "vpc": {}
+      },
+      "functions": {
+        "health": {
+          "handler": "functions/health.handler",
+          "layers": [
+            {
+              "Ref": "PythonRequirementsLambdaLayer"
+            }
+          ],
+          "events": [
+            {
+              "httpApi": {
+                "path": "/health",
+                "method": "get"
+              },
+              "resolvedMethod": "GET",
+              "resolvedPath": "/health"
+            }
+          ],
+          "name": "NexCast-dev-health",
+          "module": ".",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "python3.11",
+          "vpc": {},
+          "versionLogicalId": "HealthLambdaVersionbrwKoEMWlwsG73tIQQhhRRXIzXvib6O6RFdz46ZaI"
+        },
+        "session": {
+          "handler": "functions/session.handler",
+          "layers": [
+            {
+              "Ref": "PythonRequirementsLambdaLayer"
+            }
+          ],
+          "events": [
+            {
+              "httpApi": {
+                "path": "/session/{proxy+}",
+                "method": "any",
+                "authorizer": {
+                  "name": "cognitoAuthorizer"
+                }
+              },
+              "resolvedMethod": "ANY",
+              "resolvedPath": "/session/{proxy+}"
+            }
+          ],
+          "name": "NexCast-dev-session",
+          "module": ".",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "python3.11",
+          "vpc": {},
+          "versionLogicalId": "SessionLambdaVersionUMuauIHkfLglSsfGuZ1RGmjJQEhJnxP3HEW6YIqqIQ"
+        },
+        "frame": {
+          "handler": "functions/frame.handler",
+          "timeout": 30,
+          "layers": [
+            {
+              "Ref": "PythonRequirementsLambdaLayer"
+            }
+          ],
+          "events": [
+            {
+              "httpApi": {
+                "path": "/frame/{proxy+}",
+                "method": "any",
+                "authorizer": {
+                  "name": "cognitoAuthorizer"
+                }
+              },
+              "resolvedMethod": "ANY",
+              "resolvedPath": "/frame/{proxy+}"
+            }
+          ],
+          "name": "NexCast-dev-frame",
+          "module": ".",
+          "package": {},
+          "memory": 1024,
+          "runtime": "python3.11",
+          "vpc": {},
+          "versionLogicalId": "FrameLambdaVersionbeZKxp720h18hNMAMZECjS2I8Suh2uZ7Fcko27tbF8"
+        },
+        "history": {
+          "handler": "functions/history.handler",
+          "layers": [
+            {
+              "Ref": "PythonRequirementsLambdaLayer"
+            }
+          ],
+          "events": [
+            {
+              "httpApi": {
+                "path": "/history/{proxy+}",
+                "method": "any",
+                "authorizer": {
+                  "name": "cognitoAuthorizer"
+                }
+              },
+              "resolvedMethod": "ANY",
+              "resolvedPath": "/history/{proxy+}"
+            }
+          ],
+          "name": "NexCast-dev-history",
+          "module": ".",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "python3.11",
+          "vpc": {},
+          "versionLogicalId": "HistoryLambdaVersionKXQfrrOaqpwriNqTkdjhaiTShlS9sKSBw2n2eSq1FE"
+        }
+      },
+      "custom": {
+        "pythonRequirements": {
+          "dockerizePip": false,
+          "layer": true
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "python3.11",
+      "region": "us-east-1",
+      "environment": {
+        "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+        "DB_NAME": "nexcast",
+        "DB_USER": "admin",
+        "DB_PASSWORD": "<REDACTED>",
+        "DB_PORT": "3306",
+        "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+        "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+        "S3_BUCKET_NAME": "nexcast-frames"
+      },
+      "iam": {
+        "role": {
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "cognito-idp:*"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+              ],
+              "Resource": "arn:aws:s3:::nexcast-frames/*"
+            }
+          ]
+        }
+      },
+      "httpApi": {
+        "cors": true,
+        "authorizers": {
+          "cognitoAuthorizer": {
+            "type": "jwt",
+            "identitySource": "$request.header.Authorization",
+            "issuerUrl": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_E1etK3vnj",
+            "audience": "6jctk3ttkjn5pn5d0qh294v81l"
+          }
+        }
+      },
+      "stage": "dev",
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "HealthLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/NexCast-dev-health"
+            }
+          },
+          "SessionLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/NexCast-dev-session"
+            }
+          },
+          "FrameLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/NexCast-dev-frame"
+            }
+          },
+          "HistoryLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/NexCast-dev-history"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "NexCast",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/NexCast-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/NexCast-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "cognito-idp:*"
+                        ],
+                        "Resource": "*"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "s3:PutObject",
+                          "s3:GetObject",
+                          "s3:DeleteObject"
+                        ],
+                        "Resource": "arn:aws:s3:::nexcast-frames/*"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "NexCast",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "PythonRequirementsLambdaLayer": {
+            "Type": "AWS::Lambda::LayerVersion",
+            "Properties": {
+              "Content": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+                "S3Key": "serverless/NexCast/dev/1763083817061-2025-11-14T01:30:17.061Z/pythonRequirements.zip"
+              },
+              "LayerName": "NexCast-dev-python-requirements",
+              "Description": "Python requirements generated by serverless-python-requirements.",
+              "CompatibleRuntimes": [
+                "python3.11"
+              ]
+            }
+          },
+          "HealthLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+                "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+              },
+              "Handler": "functions/health.handler",
+              "Runtime": "python3.11",
+              "FunctionName": "NexCast-dev-health",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                  "DB_NAME": "nexcast",
+                  "DB_USER": "admin",
+                  "DB_PASSWORD": "<REDACTED>",
+                  "DB_PORT": "3306",
+                  "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                  "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                  "S3_BUCKET_NAME": "nexcast-frames"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "Ref": "PythonRequirementsLambdaLayer"
+                }
+              ]
+            },
+            "DependsOn": [
+              "HealthLogGroup"
+            ]
+          },
+          "SessionLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+                "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+              },
+              "Handler": "functions/session.handler",
+              "Runtime": "python3.11",
+              "FunctionName": "NexCast-dev-session",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                  "DB_NAME": "nexcast",
+                  "DB_USER": "admin",
+                  "DB_PASSWORD": "<REDACTED>",
+                  "DB_PORT": "3306",
+                  "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                  "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                  "S3_BUCKET_NAME": "nexcast-frames"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "Ref": "PythonRequirementsLambdaLayer"
+                }
+              ]
+            },
+            "DependsOn": [
+              "SessionLogGroup"
+            ]
+          },
+          "FrameLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+                "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+              },
+              "Handler": "functions/frame.handler",
+              "Runtime": "python3.11",
+              "FunctionName": "NexCast-dev-frame",
+              "MemorySize": 1024,
+              "Timeout": 30,
+              "Environment": {
+                "Variables": {
+                  "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                  "DB_NAME": "nexcast",
+                  "DB_USER": "admin",
+                  "DB_PASSWORD": "<REDACTED>",
+                  "DB_PORT": "3306",
+                  "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                  "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                  "S3_BUCKET_NAME": "nexcast-frames"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "Ref": "PythonRequirementsLambdaLayer"
+                }
+              ]
+            },
+            "DependsOn": [
+              "FrameLogGroup"
+            ]
+          },
+          "HistoryLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+                "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+              },
+              "Handler": "functions/history.handler",
+              "Runtime": "python3.11",
+              "FunctionName": "NexCast-dev-history",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                  "DB_NAME": "nexcast",
+                  "DB_USER": "admin",
+                  "DB_PASSWORD": "<REDACTED>",
+                  "DB_PORT": "3306",
+                  "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                  "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                  "S3_BUCKET_NAME": "nexcast-frames"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "Ref": "PythonRequirementsLambdaLayer"
+                }
+              ]
+            },
+            "DependsOn": [
+              "HistoryLogGroup"
+            ]
+          },
+          "HealthLambdaVersionbrwKoEMWlwsG73tIQQhhRRXIzXvib6O6RFdz46ZaI": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "HealthLambdaFunction"
+              },
+              "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+            }
+          },
+          "SessionLambdaVersionUMuauIHkfLglSsfGuZ1RGmjJQEhJnxP3HEW6YIqqIQ": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "SessionLambdaFunction"
+              },
+              "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+            }
+          },
+          "FrameLambdaVersionbeZKxp720h18hNMAMZECjS2I8Suh2uZ7Fcko27tbF8": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "FrameLambdaFunction"
+              },
+              "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+            }
+          },
+          "HistoryLambdaVersionKXQfrrOaqpwriNqTkdjhaiTShlS9sKSBw2n2eSq1FE": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "HistoryLambdaFunction"
+              },
+              "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+            }
+          },
+          "HttpApi": {
+            "Type": "AWS::ApiGatewayV2::Api",
+            "Properties": {
+              "Name": "dev-NexCast",
+              "ProtocolType": "HTTP",
+              "CorsConfiguration": {
+                "AllowCredentials": "<REDACTED>",
+                "AllowHeaders": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "AllowMethods": [
+                  "OPTIONS",
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "PATCH",
+                  "HEAD",
+                  "DELETE"
+                ],
+                "AllowOrigins": [
+                  "*"
+                ]
+              }
+            }
+          },
+          "HttpApiStage": {
+            "Type": "AWS::ApiGatewayV2::Stage",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "StageName": "$default",
+              "AutoDeploy": true,
+              "DefaultRouteSettings": {
+                "DetailedMetricsEnabled": false
+              }
+            }
+          },
+          "HttpApiAuthorizerCognitoAuthorizer": {
+            "Type": "AWS::ApiGatewayV2::Authorizer",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "Name": "cognitoAuthorizer",
+              "IdentitySource": [
+                "$request.header.Authorization"
+              ],
+              "AuthorizerType": "JWT",
+              "JwtConfiguration": {
+                "Audience": [
+                  "6jctk3ttkjn5pn5d0qh294v81l"
+                ],
+                "Issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_E1etK3vnj"
+              }
+            }
+          },
+          "HealthLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "HealthLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationHealth": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::GetAtt": [
+                  "HealthLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteGetHealth": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "GET /health",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationHealth"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationHealth"
+          },
+          "SessionLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "SessionLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationSession": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::GetAtt": [
+                  "SessionLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteAnySessionProxyVar": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "ANY /session/{proxy+}",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationSession"
+                    }
+                  ]
+                ]
+              },
+              "AuthorizationType": "JWT",
+              "AuthorizerId": {
+                "Ref": "HttpApiAuthorizerCognitoAuthorizer"
+              }
+            },
+            "DependsOn": "HttpApiIntegrationSession"
+          },
+          "FrameLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "FrameLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationFrame": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::GetAtt": [
+                  "FrameLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteAnyFrameProxyVar": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "ANY /frame/{proxy+}",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationFrame"
+                    }
+                  ]
+                ]
+              },
+              "AuthorizationType": "JWT",
+              "AuthorizerId": {
+                "Ref": "HttpApiAuthorizerCognitoAuthorizer"
+              }
+            },
+            "DependsOn": "HttpApiIntegrationFrame"
+          },
+          "HistoryLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "HistoryLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationHistory": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::GetAtt": [
+                  "HistoryLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteAnyHistoryProxyVar": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "ANY /history/{proxy+}",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationHistory"
+                    }
+                  ]
+                ]
+              },
+              "AuthorizationType": "JWT",
+              "AuthorizerId": {
+                "Ref": "HttpApiAuthorizerCognitoAuthorizer"
+              }
+            },
+            "DependsOn": "HttpApiIntegrationHistory"
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+            "Export": {
+              "Name": "sls-NexCast-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "PythonRequirementsLambdaLayerQualifiedArn": {
+            "Description": "Current Lambda layer version",
+            "Value": {
+              "Ref": "PythonRequirementsLambdaLayer"
+            },
+            "Export": {
+              "Name": "sls-NexCast-dev-PythonRequirementsLambdaLayerQualifiedArn"
+            }
+          },
+          "PythonRequirementsLambdaLayerHash": {
+            "Description": "Current Lambda layer hash",
+            "Value": "1321f69a5968bd42b9b5b79597e96e1900be7173",
+            "Export": {
+              "Name": "sls-NexCast-dev-PythonRequirementsLambdaLayerHash"
+            }
+          },
+          "PythonRequirementsLambdaLayerS3Key": {
+            "Description": "Current Lambda layer S3Key",
+            "Value": "serverless/NexCast/dev/1763083817061-2025-11-14T01:30:17.061Z/pythonRequirements.zip",
+            "Export": {
+              "Name": "sls-NexCast-dev-PythonRequirementsLambdaLayerS3Key"
+            }
+          },
+          "HealthLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "HealthLambdaVersionbrwKoEMWlwsG73tIQQhhRRXIzXvib6O6RFdz46ZaI"
+            },
+            "Export": {
+              "Name": "sls-NexCast-dev-HealthLambdaFunctionQualifiedArn"
+            }
+          },
+          "SessionLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "SessionLambdaVersionUMuauIHkfLglSsfGuZ1RGmjJQEhJnxP3HEW6YIqqIQ"
+            },
+            "Export": {
+              "Name": "sls-NexCast-dev-SessionLambdaFunctionQualifiedArn"
+            }
+          },
+          "FrameLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "FrameLambdaVersionbeZKxp720h18hNMAMZECjS2I8Suh2uZ7Fcko27tbF8"
+            },
+            "Export": {
+              "Name": "sls-NexCast-dev-FrameLambdaFunctionQualifiedArn"
+            }
+          },
+          "HistoryLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "HistoryLambdaVersionKXQfrrOaqpwriNqTkdjhaiTShlS9sKSBw2n2eSq1FE"
+            },
+            "Export": {
+              "Name": "sls-NexCast-dev-HistoryLambdaFunctionQualifiedArn"
+            }
+          },
+          "HttpApiId": {
+            "Description": "Id of the HTTP API",
+            "Value": {
+              "Ref": "HttpApi"
+            },
+            "Export": {
+              "Name": "sls-NexCast-dev-HttpApiId"
+            }
+          },
+          "HttpApiUrl": {
+            "Description": "URL of the HTTP API",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  }
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-NexCast-dev-HttpApiUrl"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "dashboard": {
+      "isEnabledForService": true,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": {
+        "providers": false,
+        "monitoring": false
+      },
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": "ttLvVPsRlHdvcMyRNd",
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "serviceRawFile": "# \"org\" ensures this Service is used with the correct Serverless Framework Access Key.\norg: neuralripper\n# \"app\" enables Serverless Framework Dashboard features and sharing them with other Services.\napp: nexcast-lambda\n# \"service\" is the name of this project. This will also be added to your AWS resource names.\nservice: NexCast\n\nprovider:\n  name: aws\n  runtime: python3.11\n  region: us-east-1\n  environment:\n    DB_HOST: ${env:DB_HOST}\n    DB_NAME: ${env:DB_NAME}\n    DB_USER: ${env:DB_USER}\n    DB_PASSWORD: ${env:DB_PASSWORD}\n    DB_PORT: ${env:DB_PORT, '5432'}\n    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}\n    COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}\n    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME}\n  iam:\n    role:\n      statements:\n        - Effect: Allow\n          Action:\n            - cognito-idp:*\n          Resource: \"*\"\n        - Effect: Allow\n          Action:\n            - s3:PutObject\n            - s3:GetObject\n            - s3:DeleteObject\n          Resource: \"arn:aws:s3:::${env:S3_BUCKET_NAME}/*\"\n  httpApi:\n    cors: true\n    authorizers:\n      cognitoAuthorizer:\n        type: jwt\n        identitySource: $request.header.Authorization\n        issuerUrl: https://cognito-idp.us-east-1.amazonaws.com/${env:COGNITO_USER_POOL_ID}\n        audience:\n          - ${env:COGNITO_CLIENT_ID}\n\nfunctions:\n  health:\n    handler: functions/health.handler\n    layers:\n      - { Ref: PythonRequirementsLambdaLayer }\n    events:\n      - httpApi:\n          path: /health\n          method: get\n\n  session:\n    handler: functions/session.handler\n    layers:\n      - { Ref: PythonRequirementsLambdaLayer }\n    events:\n      - httpApi:\n          path: /session/{proxy+}\n          method: any\n          authorizer:\n            name: cognitoAuthorizer\n\n  frame:\n    handler: functions/frame.handler\n    timeout: 30\n    layers:\n      - { Ref: PythonRequirementsLambdaLayer }\n    events:\n      - httpApi:\n          path: /frame/{proxy+}\n          method: any\n          authorizer:\n            name: cognitoAuthorizer\n\n  history:\n    handler: functions/history.handler\n    layers:\n      - { Ref: PythonRequirementsLambdaLayer }\n    events:\n      - httpApi:\n          path: /history/{proxy+}\n          method: any\n          authorizer:\n            name: cognitoAuthorizer\n\ncustom:\n  pythonRequirements:\n    dockerizePip: false\n    layer: true\n",
+    "command": [
+      "deploy"
+    ],
     "options": {},
-    "serviceProviderAwsCfStackId": null,
-    "serviceProviderAwsCfStackCreated": null,
-    "serviceProviderAwsCfStackUpdated": null,
-    "serviceProviderAwsCfStackStatus": null,
-    "serviceProviderAwsCfStackOutputs": null
+    "orgId": "47559c3a-e9ea-4583-bf8b-741286b856f8",
+    "orgName": "neuralripper",
+    "userId": "2VCBNbGXthVKhc8lqd",
+    "userName": "neuralripper",
+    "serviceProviderAwsAccountId": "970547374353",
+    "serviceProviderAwsCfStackName": "NexCast-dev",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:970547374353:stack/NexCast-dev/806110c0-c0f9-11f0-a883-0affc97cb451",
+    "serviceProviderAwsCfStackCreated": "2025-11-14T01:30:28.297Z",
+    "serviceProviderAwsCfStackUpdated": "2025-11-14T02:30:53.232Z",
+    "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "PythonRequirementsLambdaLayerS3Key",
+        "OutputValue": "serverless/NexCast/dev/1763083817061-2025-11-14T01:30:17.061Z/pythonRequirements.zip",
+        "Description": "Current Lambda layer S3Key",
+        "ExportName": "sls-NexCast-dev-PythonRequirementsLambdaLayerS3Key"
+      },
+      {
+        "OutputKey": "SessionLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:function:NexCast-dev-session:3",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-NexCast-dev-SessionLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "PythonRequirementsLambdaLayerQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:layer:NexCast-dev-python-requirements:1",
+        "Description": "Current Lambda layer version",
+        "ExportName": "sls-NexCast-dev-PythonRequirementsLambdaLayerQualifiedArn"
+      },
+      {
+        "OutputKey": "HealthLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:function:NexCast-dev-health:3",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-NexCast-dev-HealthLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "HistoryLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:function:NexCast-dev-history:3",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-NexCast-dev-HistoryLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "HttpApiId",
+        "OutputValue": "5uj7qjiw7h",
+        "Description": "Id of the HTTP API",
+        "ExportName": "sls-NexCast-dev-HttpApiId"
+      },
+      {
+        "OutputKey": "PythonRequirementsLambdaLayerHash",
+        "OutputValue": "1321f69a5968bd42b9b5b79597e96e1900be7173",
+        "Description": "Current Lambda layer hash",
+        "ExportName": "sls-NexCast-dev-PythonRequirementsLambdaLayerHash"
+      },
+      {
+        "OutputKey": "FrameLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:function:NexCast-dev-frame:3",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-NexCast-dev-FrameLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+        "ExportName": "sls-NexCast-dev-ServerlessDeploymentBucketName"
+      },
+      {
+        "OutputKey": "HttpApiUrl",
+        "OutputValue": "https://5uj7qjiw7h.execute-api.us-east-1.amazonaws.com",
+        "Description": "URL of the HTTP API",
+        "ExportName": "sls-NexCast-dev-HttpApiUrl"
+      }
+    ],
+    "compiledCloudFormationTemplate": {
+      "AWSTemplateFormatVersion": "2010-09-09",
+      "Description": "The AWS CloudFormation template for this Serverless application",
+      "Resources": {
+        "HealthLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/NexCast-dev-health"
+          }
+        },
+        "SessionLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/NexCast-dev-session"
+          }
+        },
+        "FrameLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/NexCast-dev-frame"
+          }
+        },
+        "HistoryLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/NexCast-dev-history"
+          }
+        },
+        "IamRoleLambdaExecution": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": [
+                      "lambda.amazonaws.com"
+                    ]
+                  },
+                  "Action": [
+                    "sts:AssumeRole"
+                  ]
+                }
+              ]
+            },
+            "Policies": [
+              {
+                "PolicyName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "NexCast",
+                      "dev",
+                      "lambda"
+                    ]
+                  ]
+                },
+                "PolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:CreateLogStream",
+                        "logs:CreateLogGroup",
+                        "logs:TagResource"
+                      ],
+                      "Resource": [
+                        {
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/NexCast-dev*:*"
+                        }
+                      ]
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:PutLogEvents"
+                      ],
+                      "Resource": [
+                        {
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/NexCast-dev*:*:*"
+                        }
+                      ]
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "cognito-idp:*"
+                      ],
+                      "Resource": "*"
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:PutObject",
+                        "s3:GetObject",
+                        "s3:DeleteObject"
+                      ],
+                      "Resource": "arn:aws:s3:::nexcast-frames/*"
+                    }
+                  ]
+                }
+              }
+            ],
+            "Path": "/",
+            "RoleName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "NexCast",
+                  "dev",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "lambdaRole"
+                ]
+              ]
+            }
+          }
+        },
+        "PythonRequirementsLambdaLayer": {
+          "Type": "AWS::Lambda::LayerVersion",
+          "Properties": {
+            "Content": {
+              "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+              "S3Key": "serverless/NexCast/dev/1763083817061-2025-11-14T01:30:17.061Z/pythonRequirements.zip"
+            },
+            "LayerName": "NexCast-dev-python-requirements",
+            "Description": "Python requirements generated by serverless-python-requirements.",
+            "CompatibleRuntimes": [
+              "python3.11"
+            ]
+          }
+        },
+        "HealthLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+              "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+            },
+            "Handler": "functions/health.handler",
+            "Runtime": "python3.11",
+            "FunctionName": "NexCast-dev-health",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                "DB_NAME": "nexcast",
+                "DB_USER": "admin",
+                "DB_PASSWORD": "<REDACTED>",
+                "DB_PORT": "3306",
+                "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                "S3_BUCKET_NAME": "nexcast-frames"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            },
+            "Layers": [
+              {
+                "Ref": "PythonRequirementsLambdaLayer"
+              }
+            ]
+          },
+          "DependsOn": [
+            "HealthLogGroup"
+          ]
+        },
+        "SessionLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+              "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+            },
+            "Handler": "functions/session.handler",
+            "Runtime": "python3.11",
+            "FunctionName": "NexCast-dev-session",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                "DB_NAME": "nexcast",
+                "DB_USER": "admin",
+                "DB_PASSWORD": "<REDACTED>",
+                "DB_PORT": "3306",
+                "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                "S3_BUCKET_NAME": "nexcast-frames"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            },
+            "Layers": [
+              {
+                "Ref": "PythonRequirementsLambdaLayer"
+              }
+            ]
+          },
+          "DependsOn": [
+            "SessionLogGroup"
+          ]
+        },
+        "FrameLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+              "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+            },
+            "Handler": "functions/frame.handler",
+            "Runtime": "python3.11",
+            "FunctionName": "NexCast-dev-frame",
+            "MemorySize": 1024,
+            "Timeout": 30,
+            "Environment": {
+              "Variables": {
+                "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                "DB_NAME": "nexcast",
+                "DB_USER": "admin",
+                "DB_PASSWORD": "<REDACTED>",
+                "DB_PORT": "3306",
+                "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                "S3_BUCKET_NAME": "nexcast-frames"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            },
+            "Layers": [
+              {
+                "Ref": "PythonRequirementsLambdaLayer"
+              }
+            ]
+          },
+          "DependsOn": [
+            "FrameLogGroup"
+          ]
+        },
+        "HistoryLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+              "S3Key": "serverless/NexCast/dev/1763088030596-2025-11-14T02:40:30.596Z/NexCast.zip"
+            },
+            "Handler": "functions/history.handler",
+            "Runtime": "python3.11",
+            "FunctionName": "NexCast-dev-history",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "DB_HOST": "nexcastdb.cfys6e4c6hg5.us-east-1.rds.amazonaws.com",
+                "DB_NAME": "nexcast",
+                "DB_USER": "admin",
+                "DB_PASSWORD": "<REDACTED>",
+                "DB_PORT": "3306",
+                "COGNITO_USER_POOL_ID": "us-east-1_E1etK3vnj",
+                "COGNITO_CLIENT_ID": "6jctk3ttkjn5pn5d0qh294v81l",
+                "S3_BUCKET_NAME": "nexcast-frames"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            },
+            "Layers": [
+              {
+                "Ref": "PythonRequirementsLambdaLayer"
+              }
+            ]
+          },
+          "DependsOn": [
+            "HistoryLogGroup"
+          ]
+        },
+        "HealthLambdaVersionbrwKoEMWlwsG73tIQQhhRRXIzXvib6O6RFdz46ZaI": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "HealthLambdaFunction"
+            },
+            "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+          }
+        },
+        "SessionLambdaVersionUMuauIHkfLglSsfGuZ1RGmjJQEhJnxP3HEW6YIqqIQ": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "SessionLambdaFunction"
+            },
+            "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+          }
+        },
+        "FrameLambdaVersionbeZKxp720h18hNMAMZECjS2I8Suh2uZ7Fcko27tbF8": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "FrameLambdaFunction"
+            },
+            "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+          }
+        },
+        "HistoryLambdaVersionKXQfrrOaqpwriNqTkdjhaiTShlS9sKSBw2n2eSq1FE": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "HistoryLambdaFunction"
+            },
+            "CodeSha256": "cF/9row1JgPL3Lw9ee0jECbovqf/YUPshiPRxLpybPA="
+          }
+        },
+        "HttpApi": {
+          "Type": "AWS::ApiGatewayV2::Api",
+          "Properties": {
+            "Name": "dev-NexCast",
+            "ProtocolType": "HTTP",
+            "CorsConfiguration": {
+              "AllowHeaders": [
+                "Content-Type",
+                "X-Amz-Date",
+                "Authorization",
+                "X-Api-Key",
+                "X-Amz-Security-Token",
+                "X-Amz-User-Agent",
+                "X-Amzn-Trace-Id"
+              ],
+              "AllowMethods": [
+                "OPTIONS",
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "HEAD",
+                "DELETE"
+              ],
+              "AllowOrigins": [
+                "*"
+              ]
+            }
+          }
+        },
+        "HttpApiStage": {
+          "Type": "AWS::ApiGatewayV2::Stage",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "StageName": "$default",
+            "AutoDeploy": true,
+            "DefaultRouteSettings": {
+              "DetailedMetricsEnabled": false
+            }
+          }
+        },
+        "HttpApiAuthorizerCognitoAuthorizer": {
+          "Type": "AWS::ApiGatewayV2::Authorizer",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "Name": "cognitoAuthorizer",
+            "IdentitySource": [
+              "$request.header.Authorization"
+            ],
+            "AuthorizerType": "JWT",
+            "JwtConfiguration": {
+              "Audience": [
+                "6jctk3ttkjn5pn5d0qh294v81l"
+              ],
+              "Issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_E1etK3vnj"
+            }
+          }
+        },
+        "HealthLambdaPermissionHttpApi": {
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+            "FunctionName": {
+              "Fn::GetAtt": [
+                "HealthLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Action": "lambda:InvokeFunction",
+            "Principal": "apigateway.amazonaws.com",
+            "SourceArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":execute-api:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  "/*"
+                ]
+              ]
+            }
+          }
+        },
+        "HttpApiIntegrationHealth": {
+          "Type": "AWS::ApiGatewayV2::Integration",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "IntegrationType": "AWS_PROXY",
+            "IntegrationUri": {
+              "Fn::GetAtt": [
+                "HealthLambdaFunction",
+                "Arn"
+              ]
+            },
+            "PayloadFormatVersion": "2.0",
+            "TimeoutInMillis": 30000
+          }
+        },
+        "HttpApiRouteGetHealth": {
+          "Type": "AWS::ApiGatewayV2::Route",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "RouteKey": "GET /health",
+            "Target": {
+              "Fn::Join": [
+                "/",
+                [
+                  "integrations",
+                  {
+                    "Ref": "HttpApiIntegrationHealth"
+                  }
+                ]
+              ]
+            }
+          },
+          "DependsOn": "HttpApiIntegrationHealth"
+        },
+        "SessionLambdaPermissionHttpApi": {
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+            "FunctionName": {
+              "Fn::GetAtt": [
+                "SessionLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Action": "lambda:InvokeFunction",
+            "Principal": "apigateway.amazonaws.com",
+            "SourceArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":execute-api:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  "/*"
+                ]
+              ]
+            }
+          }
+        },
+        "HttpApiIntegrationSession": {
+          "Type": "AWS::ApiGatewayV2::Integration",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "IntegrationType": "AWS_PROXY",
+            "IntegrationUri": {
+              "Fn::GetAtt": [
+                "SessionLambdaFunction",
+                "Arn"
+              ]
+            },
+            "PayloadFormatVersion": "2.0",
+            "TimeoutInMillis": 30000
+          }
+        },
+        "HttpApiRouteAnySessionProxyVar": {
+          "Type": "AWS::ApiGatewayV2::Route",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "RouteKey": "ANY /session/{proxy+}",
+            "Target": {
+              "Fn::Join": [
+                "/",
+                [
+                  "integrations",
+                  {
+                    "Ref": "HttpApiIntegrationSession"
+                  }
+                ]
+              ]
+            },
+            "AuthorizationType": "JWT",
+            "AuthorizerId": {
+              "Ref": "HttpApiAuthorizerCognitoAuthorizer"
+            }
+          },
+          "DependsOn": "HttpApiIntegrationSession"
+        },
+        "FrameLambdaPermissionHttpApi": {
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+            "FunctionName": {
+              "Fn::GetAtt": [
+                "FrameLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Action": "lambda:InvokeFunction",
+            "Principal": "apigateway.amazonaws.com",
+            "SourceArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":execute-api:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  "/*"
+                ]
+              ]
+            }
+          }
+        },
+        "HttpApiIntegrationFrame": {
+          "Type": "AWS::ApiGatewayV2::Integration",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "IntegrationType": "AWS_PROXY",
+            "IntegrationUri": {
+              "Fn::GetAtt": [
+                "FrameLambdaFunction",
+                "Arn"
+              ]
+            },
+            "PayloadFormatVersion": "2.0",
+            "TimeoutInMillis": 30000
+          }
+        },
+        "HttpApiRouteAnyFrameProxyVar": {
+          "Type": "AWS::ApiGatewayV2::Route",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "RouteKey": "ANY /frame/{proxy+}",
+            "Target": {
+              "Fn::Join": [
+                "/",
+                [
+                  "integrations",
+                  {
+                    "Ref": "HttpApiIntegrationFrame"
+                  }
+                ]
+              ]
+            },
+            "AuthorizationType": "JWT",
+            "AuthorizerId": {
+              "Ref": "HttpApiAuthorizerCognitoAuthorizer"
+            }
+          },
+          "DependsOn": "HttpApiIntegrationFrame"
+        },
+        "HistoryLambdaPermissionHttpApi": {
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+            "FunctionName": {
+              "Fn::GetAtt": [
+                "HistoryLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Action": "lambda:InvokeFunction",
+            "Principal": "apigateway.amazonaws.com",
+            "SourceArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":execute-api:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  "/*"
+                ]
+              ]
+            }
+          }
+        },
+        "HttpApiIntegrationHistory": {
+          "Type": "AWS::ApiGatewayV2::Integration",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "IntegrationType": "AWS_PROXY",
+            "IntegrationUri": {
+              "Fn::GetAtt": [
+                "HistoryLambdaFunction",
+                "Arn"
+              ]
+            },
+            "PayloadFormatVersion": "2.0",
+            "TimeoutInMillis": 30000
+          }
+        },
+        "HttpApiRouteAnyHistoryProxyVar": {
+          "Type": "AWS::ApiGatewayV2::Route",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "RouteKey": "ANY /history/{proxy+}",
+            "Target": {
+              "Fn::Join": [
+                "/",
+                [
+                  "integrations",
+                  {
+                    "Ref": "HttpApiIntegrationHistory"
+                  }
+                ]
+              ]
+            },
+            "AuthorizationType": "JWT",
+            "AuthorizerId": {
+              "Ref": "HttpApiAuthorizerCognitoAuthorizer"
+            }
+          },
+          "DependsOn": "HttpApiIntegrationHistory"
+        }
+      },
+      "Outputs": {
+        "ServerlessDeploymentBucketName": {
+          "Value": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
+          "Export": {
+            "Name": "sls-NexCast-dev-ServerlessDeploymentBucketName"
+          }
+        },
+        "PythonRequirementsLambdaLayerQualifiedArn": {
+          "Description": "Current Lambda layer version",
+          "Value": {
+            "Ref": "PythonRequirementsLambdaLayer"
+          },
+          "Export": {
+            "Name": "sls-NexCast-dev-PythonRequirementsLambdaLayerQualifiedArn"
+          }
+        },
+        "PythonRequirementsLambdaLayerHash": {
+          "Description": "Current Lambda layer hash",
+          "Value": "1321f69a5968bd42b9b5b79597e96e1900be7173",
+          "Export": {
+            "Name": "sls-NexCast-dev-PythonRequirementsLambdaLayerHash"
+          }
+        },
+        "PythonRequirementsLambdaLayerS3Key": {
+          "Description": "Current Lambda layer S3Key",
+          "Value": "serverless/NexCast/dev/1763083817061-2025-11-14T01:30:17.061Z/pythonRequirements.zip",
+          "Export": {
+            "Name": "sls-NexCast-dev-PythonRequirementsLambdaLayerS3Key"
+          }
+        },
+        "HealthLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "HealthLambdaVersionbrwKoEMWlwsG73tIQQhhRRXIzXvib6O6RFdz46ZaI"
+          },
+          "Export": {
+            "Name": "sls-NexCast-dev-HealthLambdaFunctionQualifiedArn"
+          }
+        },
+        "SessionLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "SessionLambdaVersionUMuauIHkfLglSsfGuZ1RGmjJQEhJnxP3HEW6YIqqIQ"
+          },
+          "Export": {
+            "Name": "sls-NexCast-dev-SessionLambdaFunctionQualifiedArn"
+          }
+        },
+        "FrameLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "FrameLambdaVersionbeZKxp720h18hNMAMZECjS2I8Suh2uZ7Fcko27tbF8"
+          },
+          "Export": {
+            "Name": "sls-NexCast-dev-FrameLambdaFunctionQualifiedArn"
+          }
+        },
+        "HistoryLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "HistoryLambdaVersionKXQfrrOaqpwriNqTkdjhaiTShlS9sKSBw2n2eSq1FE"
+          },
+          "Export": {
+            "Name": "sls-NexCast-dev-HistoryLambdaFunctionQualifiedArn"
+          }
+        },
+        "HttpApiId": {
+          "Description": "Id of the HTTP API",
+          "Value": {
+            "Ref": "HttpApi"
+          },
+          "Export": {
+            "Name": "sls-NexCast-dev-HttpApiId"
+          }
+        },
+        "HttpApiUrl": {
+          "Description": "URL of the HTTP API",
+          "Value": {
+            "Fn::Join": [
+              "",
+              [
+                "https://",
+                {
+                  "Ref": "HttpApi"
+                },
+                ".execute-api.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix"
+                }
+              ]
+            ]
+          },
+          "Export": {
+            "Name": "sls-NexCast-dev-HttpApiUrl"
+          }
+        }
+      }
+    }
   }
 }

@@ -12,7 +12,8 @@ def handler(event, context):
     Frame upload endpoint
     POST /frame/upload
     """
-    method = event.get('httpMethod', '')
+    # HTTP API v2 event structure
+    method = event.get('requestContext', {}).get('http', {}).get('method', event.get('httpMethod', ''))
 
     if method != 'POST':
         return {
