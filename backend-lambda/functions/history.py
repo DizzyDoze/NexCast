@@ -7,13 +7,17 @@ def handler(event, context):
     GET /history/{session_id}
     GET /history/list
     """
-    path = event.get('path', '')
-    method = event.get('httpMethod', '')
+    # HTTP API v2 event structure
+    path = event.get('rawPath', event.get('path', ''))
+    method = event.get('requestContext', {}).get('http', {}).get('method', event.get('httpMethod', ''))
 
-    # Get user from Cognito authorizer
+    # Get user from Cognito authorizer (HTTP API v2)
     user_sub = None
-    if event.get('requestContext', {}).get('authorizer', {}).get('claims'):
-        user_sub = event['requestContext']['authorizer']['claims']['sub']
+    authorizer = event.get('requestContext', {}).get('authorizer', {})
+    if authorizer.get('jwt', {}).get('claims'):
+        user_sub = authorizer['jwt']['claims']['sub']
+    elif authorizer.get('claims'):  # Fallback for REST API
+        user_sub = authorizer['claims']['sub']
 
     if not user_sub:
         return {
@@ -26,15 +30,17 @@ def handler(event, context):
     if '/list' in path and method == 'GET':
         return list_sessions(user_sub)
     elif method == 'GET':
-        # Extract session_id from path
-        session_id = event.get('pathParameters', {}).get('session_id')
-        if session_id:
-            return get_session_history(session_id, user_sub)
+        # Extract session_id from path (e.g., /history/123)
+        path_parts = path.strip('/').split('/')
+        if len(path_parts) >= 2:
+            session_id = path_parts[-1]
+            if session_id.isdigit():
+                return get_session_history(session_id, user_sub)
 
     return {
         'statusCode': 404,
         'headers': {'Access-Control-Allow-Origin': '*'},
-        'body': json.dumps({'error': 'Not found'})
+        'body': json.dumps({'error': f'Not found: {method} {path}'})
     }
 
 

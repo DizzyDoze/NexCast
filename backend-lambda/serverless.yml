@@ -31,74 +31,61 @@ provider:
             - s3:GetObject
             - s3:DeleteObject
           Resource: "arn:aws:s3:::${env:S3_BUCKET_NAME}/*"
+  httpApi:
+    cors: true
+    authorizers:
+      cognitoAuthorizer:
+        type: jwt
+        identitySource: $request.header.Authorization
+        issuerUrl: https://cognito-idp.us-east-1.amazonaws.com/${env:COGNITO_USER_POOL_ID}
+        audience:
+          - ${env:COGNITO_CLIENT_ID}
 
 functions:
   health:
     handler: functions/health.handler
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
     events:
       - httpApi:
           path: /health
           method: get
-          cors: true
-
-  auth:
-    handler: functions/auth.handler
-    events:
-      - httpApi:
-          path: /auth/{proxy+}
-          method: any
-          cors: true
 
   session:
     handler: functions/session.handler
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
     events:
       - httpApi:
           path: /session/{proxy+}
           method: any
-          cors: true
           authorizer:
             name: cognitoAuthorizer
-            type: jwt
-            identitySource: $request.header.Authorization
-            issuerUrl: https://cognito-idp.us-east-1.amazonaws.com/${env:COGNITO_USER_POOL_ID}
-            audience:
-              - ${env:COGNITO_CLIENT_ID}
 
   frame:
     handler: functions/frame.handler
     timeout: 30
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
     events:
       - httpApi:
           path: /frame/{proxy+}
           method: any
-          cors: true
           authorizer:
             name: cognitoAuthorizer
-            type: jwt
-            identitySource: $request.header.Authorization
-            issuerUrl: https://cognito-idp.us-east-1.amazonaws.com/${env:COGNITO_USER_POOL_ID}
-            audience:
-              - ${env:COGNITO_CLIENT_ID}
 
   history:
     handler: functions/history.handler
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
     events:
       - httpApi:
           path: /history/{proxy+}
           method: any
-          cors: true
           authorizer:
             name: cognitoAuthorizer
-            type: jwt
-            identitySource: $request.header.Authorization
-            issuerUrl: https://cognito-idp.us-east-1.amazonaws.com/${env:COGNITO_USER_POOL_ID}
-            audience:
-              - ${env:COGNITO_CLIENT_ID}
-
-plugins:
-  - serverless-python-requirements
 
 custom:
   pythonRequirements:
-    dockerizePip: true
+    dockerizePip: false
     layer: true

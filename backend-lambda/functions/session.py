@@ -8,18 +8,22 @@ def handler(event, context):
     POST /session/start
     POST /session/end
     """
-    path = event.get('path', '')
-    method = event.get('httpMethod', '')
+    # HTTP API v2 event structure
+    path = event.get('rawPath', event.get('path', ''))
+    method = event.get('requestContext', {}).get('http', {}).get('method', event.get('httpMethod', ''))
 
     # Parse body
     body = {}
     if event.get('body'):
         body = json.loads(event.get('body', '{}'))
 
-    # Get user from Cognito authorizer
+    # Get user from Cognito authorizer (HTTP API v2)
     user_sub = None
-    if event.get('requestContext', {}).get('authorizer', {}).get('claims'):
-        user_sub = event['requestContext']['authorizer']['claims']['sub']
+    authorizer = event.get('requestContext', {}).get('authorizer', {})
+    if authorizer.get('jwt', {}).get('claims'):
+        user_sub = authorizer['jwt']['claims']['sub']
+    elif authorizer.get('claims'):  # Fallback for REST API
+        user_sub = authorizer['claims']['sub']
 
     # Route to appropriate handler
     if path.endswith('/start') and method == 'POST':
@@ -30,7 +34,7 @@ def handler(event, context):
     return {
         'statusCode': 404,
         'headers': {'Access-Control-Allow-Origin': '*'},
-        'body': json.dumps({'error': 'Not found'})
+        'body': json.dumps({'error': f'Not found: {method} {path}'})
     }
 
 
