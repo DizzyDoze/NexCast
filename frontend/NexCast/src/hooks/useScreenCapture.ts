@@ -28,11 +28,12 @@ export const useScreenCapture = (
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
+  const animationIdRef = useRef<number | null>(null);
 
   /**
-   * Capture a single frame from the video stream
+   * Render preview continuously (30 FPS like Zoom/Meet)
    */
-  const captureFrame = useCallback(() => {
+  const renderPreview = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
 
     const video = videoRef.current;
@@ -48,9 +49,19 @@ export const useScreenCapture = (
     // Draw current video frame to canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convert to base64
+    // Convert to base64 for preview
     const frameData = canvas.toDataURL('image/jpeg', 0.8);
     setCurrentFrame(frameData);
+
+    // Continue loop
+    animationIdRef.current = requestAnimationFrame(renderPreview);
+  }, []);
+
+  /**
+   * Capture a single frame for processing (interval-based for LLM)
+   */
+  const captureFrame = useCallback(() => {
+    // Increment frame count (will be used for Phase 2 LLM processing)
     setFrameCount((prev) => prev + 1);
   }, []);
 
@@ -93,9 +104,14 @@ export const useScreenCapture = (
         };
       });
 
-      // Start capturing frames at interval
+      // Start capturing frames
       setIsCapturing(true);
       setFrameCount(0);
+
+      // Start continuous preview (30 FPS)
+      animationIdRef.current = requestAnimationFrame(renderPreview);
+
+      // Start interval counter for LLM processing (Phase 2)
       intervalIdRef.current = setInterval(captureFrame, captureInterval);
 
       // Handle user stopping screen share
@@ -108,12 +124,18 @@ export const useScreenCapture = (
       setError(errorMessage);
       console.error('Screen capture error:', err);
     }
-  }, [captureFrame, captureInterval]);
+  }, [captureFrame, captureInterval, renderPreview]);
 
   /**
    * Stop screen capture
    */
   const stopCapture = useCallback(() => {
+    // Clear animation frame
+    if (animationIdRef.current) {
+      cancelAnimationFrame(animationIdRef.current);
+      animationIdRef.current = null;
+    }
+
     // Clear interval
     if (intervalIdRef.current) {
       clearInterval(intervalIdRef.current);
@@ -134,6 +156,8 @@ export const useScreenCapture = (
 
     canvasRef.current = null;
     setIsCapturing(false);
+    setCurrentFrame(null); // Clear preview
+    setFrameCount(0); // Reset counter
   }, []);
 
   // Cleanup on unmount

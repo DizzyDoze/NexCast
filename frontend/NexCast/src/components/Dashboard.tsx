@@ -35,7 +35,7 @@ export const Dashboard = () => {
   });
 
   // Screen capture hook
-  const capture = useScreenCapture(2000); // Capture every 2 seconds
+  const capture = useScreenCapture(1000); // Count frames every 1s for LLM (Phase 2)
 
   // Timer ref
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -227,7 +227,7 @@ export const Dashboard = () => {
                     setPreferences({ ...preferences, voice: e.target.value })
                   }
                   disabled={isSessionActive}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-900 bg-white"
                 >
                   {VOICE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -251,7 +251,7 @@ export const Dashboard = () => {
                     })
                   }
                   disabled={isSessionActive}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-900 bg-white"
                 >
                   {STYLE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>

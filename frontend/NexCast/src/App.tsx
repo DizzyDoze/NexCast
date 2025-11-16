@@ -85,7 +85,8 @@ function App() {
     }
   }, [auth.isAuthenticated, auth.user])
 
-  const signOutRedirect = () => {
+  const signOutRedirect = async () => {
+    await auth.removeUser()
     const clientId = import.meta.env.VITE_COGNITO_CLIENT_ID
     const logoutUri = `${window.location.origin}/`
     const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN
