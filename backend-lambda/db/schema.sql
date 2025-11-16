@@ -15,6 +15,13 @@ CREATE TABLE IF NOT EXISTS sessions (
     started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ended_at TIMESTAMP NULL,
     status VARCHAR(20) DEFAULT 'active',
+    frame_count INT DEFAULT 0,
+    -- Voice preferences (Google TTS compatible)
+    voice VARCHAR(50),
+    commentary_style VARCHAR(50),
+    speaking_rate DECIMAL(3,2) DEFAULT 1.0,
+    pitch DECIMAL(4,1) DEFAULT 0.0,
+    volume INT DEFAULT 100,
     INDEX idx_user_sessions (user_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

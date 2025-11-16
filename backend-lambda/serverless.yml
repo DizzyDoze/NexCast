@@ -32,7 +32,24 @@ provider:
             - s3:DeleteObject
           Resource: "arn:aws:s3:::${env:S3_BUCKET_NAME}/*"
   httpApi:
-    cors: true
+    cors:
+      allowedOrigins:
+        - https://localhost:5173
+        - http://localhost:5173
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowCredentials: true
+      maxAge: 300
     authorizers:
       cognitoAuthorizer:
         type: jwt
@@ -58,19 +75,15 @@ functions:
     events:
       - httpApi:
           path: /session/{proxy+}
-          method: any
+          method: OPTIONS
+      - httpApi:
+          path: /session/{proxy+}
+          method: POST
           authorizer:
             name: cognitoAuthorizer
-
-  frame:
-    handler: functions/frame.handler
-    timeout: 30
-    layers:
-      - { Ref: PythonRequirementsLambdaLayer }
-    events:
       - httpApi:
-          path: /frame/{proxy+}
-          method: any
+          path: /session/{proxy+}
+          method: GET
           authorizer:
             name: cognitoAuthorizer
 
@@ -81,7 +94,10 @@ functions:
     events:
       - httpApi:
           path: /history/{proxy+}
-          method: any
+          method: OPTIONS
+      - httpApi:
+          path: /history/{proxy+}
+          method: GET
           authorizer:
             name: cognitoAuthorizer
 
