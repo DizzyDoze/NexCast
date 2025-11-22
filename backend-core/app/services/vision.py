@@ -18,14 +18,19 @@ class VisionService:
         context = "\n".join(f"T-{i+1}: {d}" for i, d in enumerate(reversed(history)))
 
         # Input: Current Frame + Historical Context
-        prompt = f"Previous frames:\n{context}\n\nWhat's happening NOW? Note any changes." if context else "What's happening in this image? Be concise."
+        prompt = (
+            f"Previous frames:\n{context}\n\nDescribe what's happening NOW in ONE short sentence. Note any changes."
+            if context
+            else "Describe this image in ONE short sentence."
+        )
 
         response = await self._client.aio.models.generate_content(
             model=self._model,
             contents=[
                 types.Part.from_bytes(data=base64.b64decode(frame_base64), mime_type="image/jpeg"),
                 prompt
-            ]
+            ],
+            config=types.GenerateContentConfig(temperature=0.3)
         )
 
         desc = response.text.strip()

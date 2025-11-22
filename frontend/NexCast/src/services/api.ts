@@ -39,6 +39,7 @@ export interface SessionPreferences {
   speaking_rate?: number;
   pitch?: number;
   volume?: number;
+  capture_interval?: number;
 }
 
 export interface Session {

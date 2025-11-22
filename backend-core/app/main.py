@@ -18,10 +18,10 @@ app = FastAPI(title="NexCast API", version="1.0.0")
 # CORS configuration for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://localhost:5173", "http://localhost:5173"],  # Vite dev server
+    allow_origins=["*"],  # Vite dev server
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 # Include WebSocket router

@@ -17,7 +17,7 @@ export interface UseScreenCaptureReturn extends ScreenCaptureState {
  * @param captureInterval - Interval between captures in milliseconds (default: 2000ms)
  */
 export const useScreenCapture = (
-  captureInterval: number = 2000
+  captureInterval: number = 5000
 ): UseScreenCaptureReturn => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [frameCount, setFrameCount] = useState(0);
@@ -116,6 +116,8 @@ export const useScreenCapture = (
 
       // Handle user stopping screen share
       stream.getVideoTracks()[0].addEventListener('ended', () => {
+        console.log('🔴 SCREEN SHARE ENDED - MediaStream track ended event fired');
+        console.trace('Screen share end stack trace');
         stopCapture();
       });
     } catch (err) {

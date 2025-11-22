@@ -15,7 +15,7 @@ class LlmService:
         self._system_prompt = (
             "You are a live sports commentator providing real-time commentary. "
             "Be passionate, enthusiastic, humorous, and sarcastic. "
-            "Keep responses concise (2-3 sentences max) for real-time delivery."
+            "Keep responses super concise in ONLY ONE sentence for real-time delivery."
         )
 
     async def generate_comment(self, description: str) -> str:

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { api, SessionPreferences } from '../services/api';
 import { useScreenCapture } from '../hooks/useScreenCapture';
+import { useWebSocketAudio } from '../hooks/useWebSocketAudio';
+
 
 // Available Google TTS voices
 const VOICE_OPTIONS = [
@@ -24,6 +26,7 @@ export const Dashboard = () => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const wsAudio = useWebSocketAudio()
 
   // Preferences state
   const [preferences, setPreferences] = useState<SessionPreferences>({
@@ -32,10 +35,11 @@ export const Dashboard = () => {
     speaking_rate: 1.0,
     pitch: 0.0,
     volume: 100,
+    capture_interval: 3000,
   });
 
   // Screen capture hook
-  const capture = useScreenCapture(1000); // Count frames every 1s for LLM (Phase 2)
+  const capture = useScreenCapture(preferences.capture_interval || 3000);
 
   // Timer ref
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -60,6 +64,13 @@ export const Dashboard = () => {
     };
   }, [isSessionActive, sessionStartTime]);
 
+  // Send frames to WebSocket at user-configured interval
+  useEffect(() => {
+    if (isSessionActive && wsAudio.isConnected && capture.currentFrame) {
+      wsAudio.sendFrame(capture.currentFrame);
+    }
+  }, [capture.frameCount]); // Only trigger when frameCount increments
+
   // Format elapsed time as MM:SS
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -81,6 +92,9 @@ export const Dashboard = () => {
 
       // Start screen capture
       await capture.startCapture();
+
+      // Connect WebSocket
+      wsAudio.connect(response.session_id, preferences)
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to start session';
@@ -96,6 +110,9 @@ export const Dashboard = () => {
     try {
       setError(null);
       setIsLoading(true);
+
+      // Disconnect WebSocket frist
+      wsAudio.disconnect()
 
       if (sessionId) {
         // End API session with frame count
@@ -125,9 +142,9 @@ export const Dashboard = () => {
       <h1 className="text-3xl font-bold mb-6">Live Commentary Dashboard</h1>
 
       {/* Error Display */}
-      {(error || capture.error) && (
+      {(error || capture.error || wsAudio.error) && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <strong>Error:</strong> {error || capture.error}
+          <strong>Error:</strong> {error || capture.error || wsAudio.error}
         </div>
       )}
 
@@ -151,7 +168,7 @@ export const Dashboard = () => {
 
             {/* Session Info */}
             {isSessionActive && (
-              <div className="grid grid-cols-3 gap-4 mb-4 text-center">
+              <div className="grid grid-cols-4 gap-4 mb-4 text-center">
                 <div>
                   <p className="text-sm text-gray-600">Session ID</p>
                   <p className="text-2xl font-bold">{sessionId}</p>
@@ -161,8 +178,14 @@ export const Dashboard = () => {
                   <p className="text-2xl font-bold">{formatTime(elapsedTime)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Frames Captured</p>
+                  <p className="text-sm text-gray-600">Frames</p>
                   <p className="text-2xl font-bold">{capture.frameCount}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">WebSocket</p>
+                  <p className="text-2xl font-bold">
+                    {wsAudio.isConnected ? '🟢' : '🔴'}
+                  </p>
                 </div>
               </div>
             )}
@@ -340,6 +363,33 @@ export const Dashboard = () => {
                   <span>0%</span>
                   <span>50%</span>
                   <span>100%</span>
+                </div>
+              </div>
+
+              {/* Capture Interval */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Capture Interval: {(preferences.capture_interval || 3000) / 1000}s
+                </label>
+                <input
+                  type="range"
+                  min="5000"
+                  max="10000"
+                  step="500"
+                  value={preferences.capture_interval || 7500}
+                  onChange={(e) =>
+                    setPreferences({
+                      ...preferences,
+                      capture_interval: parseInt(e.target.value),
+                    })
+                  }
+                  disabled={isSessionActive}
+                  className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>5s (Fast)</span>
+                  <span>7.5s</span>
+                  <span>10s (Slow)</span>
                 </div>
               </div>
             </div>
