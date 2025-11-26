@@ -7,13 +7,13 @@ interface ScreenPreviewProps {
 
 export const ScreenPreview = ({ currentFrame, isSessionActive }: ScreenPreviewProps) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold">Screen Preview</CardTitle>
+    <Card className="bg-gray-800 border-gray-700">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg font-semibold text-white">Screen Preview</CardTitle>
       </CardHeader>
 
       <CardContent>
-        <div className="aspect-video bg-black/50 rounded-lg flex items-center justify-center overflow-hidden border border-border/40">
+        <div className="aspect-video bg-black rounded-lg flex items-center justify-center overflow-hidden border border-gray-700">
           {currentFrame ? (
             <img
               src={currentFrame}
@@ -21,8 +21,8 @@ export const ScreenPreview = ({ currentFrame, isSessionActive }: ScreenPreviewPr
               className="w-full h-full object-contain"
             />
           ) : (
-            <div className="text-center space-y-2">
-              <p className="text-sm text-muted-foreground">
+            <div className="text-center">
+              <p className="text-sm text-gray-400">
                 {isSessionActive
                   ? 'Waiting for first frame...'
                   : 'Start a session to see screen preview'}

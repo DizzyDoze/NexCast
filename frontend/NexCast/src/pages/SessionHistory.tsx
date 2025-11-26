@@ -50,13 +50,14 @@ export const SessionHistory = () => {
     <div className="h-full w-full overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Session History</h1>
-            <p className="text-muted-foreground mt-1">View and manage your commentary sessions</p>
+            <h1 className="text-3xl font-bold tracking-tight text-white">Session History</h1>
+            <p className="text-gray-400 mt-1">View and manage your commentary sessions</p>
           </div>
           <Button
             onClick={loadSessions}
             disabled={isLoading}
             variant="outline"
+            className="border-gray-600 text-white hover:bg-gray-700"
           >
             {isLoading ? 'Refreshing...' : 'Refresh'}
           </Button>
@@ -64,7 +65,7 @@ export const SessionHistory = () => {
 
         {/* Error Display */}
         {error && (
-          <div className="bg-destructive/15 border border-destructive text-destructive px-4 py-3 rounded-lg mb-6">
+          <div className="bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg mb-6">
             <strong>Error:</strong> {error}
           </div>
         )}
@@ -72,46 +73,46 @@ export const SessionHistory = () => {
         {/* Loading State */}
         {isLoading && !error && (
           <div className="flex items-center justify-center py-12">
-            <div className="text-muted-foreground">Loading sessions...</div>
+            <div className="text-gray-400">Loading sessions...</div>
           </div>
         )}
 
         {/* Sessions List */}
         {!isLoading && !error && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {sessions.length === 0 ? (
-              <Card>
+              <Card className="bg-gray-800 border-gray-700">
                 <CardContent className="flex flex-col items-center justify-center py-16">
-                  <p className="text-muted-foreground text-center">
+                  <p className="text-gray-400 text-center">
                     No sessions found. Start a session in the Playground to see it here.
                   </p>
                 </CardContent>
               </Card>
             ) : (
               sessions.map((session) => (
-                <Card key={session.session_id} className="hover:bg-accent/50 transition-colors">
-                  <CardContent className="p-6">
+                <Card key={session.session_id} className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors">
+                  <CardContent className="p-4">
                     <div className="flex items-center justify-between gap-6">
                       <div className="flex items-center gap-6 flex-1">
                         <div className="space-y-0.5 min-w-[100px]">
-                          <p className="text-xs text-muted-foreground">Session</p>
-                          <p className="text-sm font-semibold">#{session.session_id}</p>
+                          <p className="text-xs text-gray-400">Session</p>
+                          <p className="text-sm font-semibold text-white">#{session.session_id}</p>
                         </div>
                         <div className="space-y-0.5 min-w-[160px]">
-                          <p className="text-xs text-muted-foreground">Started</p>
-                          <p className="text-sm">{formatDate(session.started_at)}</p>
+                          <p className="text-xs text-gray-400">Started</p>
+                          <p className="text-sm text-gray-300">{formatDate(session.started_at)}</p>
                         </div>
                         <div className="space-y-0.5 min-w-[100px]">
-                          <p className="text-xs text-muted-foreground">Duration</p>
-                          <p className="text-sm font-mono">{formatDuration(session.duration)}</p>
+                          <p className="text-xs text-gray-400">Duration</p>
+                          <p className="text-sm font-mono text-gray-300">{formatDuration(session.duration)}</p>
                         </div>
                         <div className="space-y-0.5 min-w-[80px]">
-                          <p className="text-xs text-muted-foreground">Frames</p>
-                          <p className="text-sm">{session.frame_count}</p>
+                          <p className="text-xs text-gray-400">Frames</p>
+                          <p className="text-sm text-gray-300">{session.frame_count}</p>
                         </div>
                         <div className="space-y-0.5 min-w-[100px]">
-                          <p className="text-xs text-muted-foreground">Speakers</p>
-                          <p className="text-sm">
+                          <p className="text-xs text-gray-400">Speakers</p>
+                          <p className="text-sm text-gray-300">
                             {session.preferences.speaker2_voice_id ? 'Dual' : 'Single'}
                           </p>
                         </div>
@@ -120,18 +121,18 @@ export const SessionHistory = () => {
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${
                             session.status === 'completed'
-                              ? 'bg-emerald-500/10 text-emerald-500'
+                              ? 'bg-emerald-500/20 text-emerald-400'
                               : session.status === 'active'
-                              ? 'bg-blue-500/10 text-blue-500'
-                              : 'bg-red-500/10 text-red-500'
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : 'bg-red-500/20 text-red-400'
                           }`}
                         >
                           <div className={`w-1.5 h-1.5 rounded-full ${
                             session.status === 'completed'
-                              ? 'bg-emerald-500'
+                              ? 'bg-emerald-400'
                               : session.status === 'active'
-                              ? 'bg-blue-500'
-                              : 'bg-red-500'
+                              ? 'bg-blue-400'
+                              : 'bg-red-400'
                           }`} />
                           {session.status}
                         </span>

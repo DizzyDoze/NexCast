@@ -11,12 +11,12 @@ import './App.css'
 function AuthenticatedApp() {
   return (
     <BrowserRouter>
-      <div className="h-screen w-screen flex overflow-hidden">
+      <div className="h-full w-full flex overflow-hidden bg-gray-900">
         {/* Sidebar */}
         <SideBar />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-8">
+        <main className="flex-1 overflow-y-auto p-8 bg-gray-900">
           <Routes>
             <Route path="/playground" element={<Playground />} />
             <Route path="/history" element={<SessionHistory />} />

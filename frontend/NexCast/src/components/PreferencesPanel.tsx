@@ -75,15 +75,15 @@ export const PreferencesPanel = ({
   }, []);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold">Preferences</CardTitle>
+    <Card className="bg-gray-800 border-gray-700">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg font-semibold text-white">Preferences</CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-6">
-        <div className="space-y-4">
+      <CardContent className="space-y-4">
+        <div className="space-y-3">
           <div className="space-y-2">
-            <label htmlFor="speaker1" className="text-sm font-medium">
+            <label htmlFor="speaker1" className="text-sm font-medium text-gray-300">
               Speaker 1
             </label>
             <select
@@ -93,7 +93,7 @@ export const PreferencesPanel = ({
                 onPreferencesChange({ ...preferences, speaker1_voice_id: e.target.value })
               }
               disabled={isSessionActive || isLoadingVoices}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-9 w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="">Select a voice...</option>
               {voices.map((voice) => (
@@ -105,8 +105,8 @@ export const PreferencesPanel = ({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="speaker2" className="text-sm font-medium">
-              Speaker 2 <span className="text-muted-foreground">(Optional)</span>
+            <label htmlFor="speaker2" className="text-sm font-medium text-gray-300">
+              Speaker 2 <span className="text-gray-500">(Optional)</span>
             </label>
             <select
               id="speaker2"
@@ -118,7 +118,7 @@ export const PreferencesPanel = ({
                 })
               }
               disabled={isSessionActive || isLoadingVoices}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-9 w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="">None (single speaker)</option>
               {voices.map((voice) => (
@@ -130,7 +130,7 @@ export const PreferencesPanel = ({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="interval" className="text-sm font-medium">
+            <label htmlFor="interval" className="text-sm font-medium text-gray-300">
               Capture Interval
             </label>
             <select
@@ -143,7 +143,7 @@ export const PreferencesPanel = ({
                 })
               }
               disabled={isSessionActive}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-9 w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {INTERVAL_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -155,7 +155,7 @@ export const PreferencesPanel = ({
         </div>
 
         {isSessionActive && (
-          <div className="rounded-lg bg-muted p-3 text-sm text-muted-foreground">
+          <div className="rounded-lg bg-gray-700/50 border border-gray-600 p-3 text-sm text-gray-400">
             Preferences are locked during active session
           </div>
         )}

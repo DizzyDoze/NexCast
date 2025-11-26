@@ -119,20 +119,20 @@ export const Playground = () => {
   return (
       <div className="w-full h-full overflow-y-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold tracking-tight">Live Commentary Playground</h1>
-          <p className="text-muted-foreground mt-1">Start and manage your live commentary sessions</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Live Commentary Playground</h1>
+          <p className="text-gray-400 mt-1">Start and manage your live commentary sessions</p>
         </div>
 
         {/* Error Display */}
         {(error || capture.error || wsAudio.error) && (
-          <div className="bg-destructive/15 border border-destructive text-destructive px-4 py-3 rounded-lg mb-6">
+          <div className="bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg mb-6">
             <strong>Error:</strong> {error || capture.error || wsAudio.error}
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: Session Control & Preview */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6">
             <SessionControl
               isSessionActive={isSessionActive}
               isLoading={isLoading}

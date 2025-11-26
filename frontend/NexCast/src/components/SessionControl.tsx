@@ -29,37 +29,37 @@ export const SessionControl = ({
   };
 
   return (
-    <Card>
-      <CardHeader className="flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-xl font-semibold">Session Status</CardTitle>
+    <Card className="bg-gray-800 border-gray-700">
+      <CardHeader className="flex-row items-center justify-between space-y-0 pb-3">
+        <CardTitle className="text-lg font-semibold text-white">Session Status</CardTitle>
         <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
           isSessionActive
-            ? 'bg-emerald-500/10 text-emerald-500'
-            : 'bg-muted text-muted-foreground'
+            ? 'bg-emerald-500/20 text-emerald-400'
+            : 'bg-gray-700 text-gray-400'
         }`}>
-          <div className={`w-2 h-2 rounded-full ${isSessionActive ? 'bg-emerald-500' : 'bg-muted-foreground'}`} />
+          <div className={`w-2 h-2 rounded-full ${isSessionActive ? 'bg-emerald-400' : 'bg-gray-500'}`} />
           {isSessionActive ? 'Active' : 'Idle'}
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         {isSessionActive && (
           <div className="grid grid-cols-4 gap-4">
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Session ID</p>
-              <p className="text-2xl font-semibold">{sessionId}</p>
+              <p className="text-xs text-gray-400">Session ID</p>
+              <p className="text-xl font-semibold text-white">{sessionId}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Duration</p>
-              <p className="text-2xl font-semibold font-mono">{formatTime(elapsedTime)}</p>
+              <p className="text-xs text-gray-400">Duration</p>
+              <p className="text-xl font-semibold font-mono text-white">{formatTime(elapsedTime)}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Frames</p>
-              <p className="text-2xl font-semibold">{frameCount}</p>
+              <p className="text-xs text-gray-400">Frames</p>
+              <p className="text-xl font-semibold text-white">{frameCount}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Connection</p>
-              <p className="text-2xl">
+              <p className="text-xs text-gray-400">Connection</p>
+              <p className="text-xl">
                 {isWebSocketConnected ? '🟢' : '🔴'}
               </p>
             </div>
@@ -71,7 +71,7 @@ export const SessionControl = ({
             onClick={onStartSession}
             disabled={isLoading}
             size="lg"
-            className="w-full"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
           >
             {isLoading ? 'Starting...' : 'Start Commentary Session'}
           </Button>
