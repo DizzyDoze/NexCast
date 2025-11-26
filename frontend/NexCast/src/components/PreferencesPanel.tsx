@@ -74,6 +74,32 @@ export const PreferencesPanel = ({
     fetchVoices();
   }, []);
 
+  const formatVoiceName = (voice: Voice): string => {
+    const name = voice.name;
+    const labels = voice.labels;
+
+    if (!labels) return name;
+
+    const parts: string[] = [];
+
+    // Add descriptive trait (excited, classy, professional, etc.)
+    if (labels.descriptive) {
+      parts.push(labels.descriptive.charAt(0).toUpperCase() + labels.descriptive.slice(1));
+    }
+
+    // Add accent
+    if (labels.accent) {
+      parts.push(labels.accent.charAt(0).toUpperCase() + labels.accent.slice(1));
+    }
+
+    // Add gender
+    if (labels.gender) {
+      parts.push(labels.gender.charAt(0).toUpperCase() + labels.gender.slice(1));
+    }
+
+    return parts.length > 0 ? `${name} (${parts.join(', ')})` : name;
+  };
+
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader className="pb-3">
@@ -101,7 +127,7 @@ export const PreferencesPanel = ({
 
           <div className="space-y-2">
             <label htmlFor="context" className="text-sm font-medium text-gray-300">
-              Commentary Context
+              Player Context
             </label>
             <textarea
               id="context"
@@ -110,7 +136,7 @@ export const PreferencesPanel = ({
                 onPreferencesChange({ ...preferences, context: e.target.value })
               }
               disabled={isSessionActive}
-              placeholder="Describe the commentary style and context..."
+              placeholder="Describe who you are (e.g., pro player, streamer, casual gamer)..."
               rows={3}
               className="flex w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
             />
@@ -132,7 +158,7 @@ export const PreferencesPanel = ({
               <option value="">Select a voice...</option>
               {voices.map((voice) => (
                 <option key={voice.voice_id} value={voice.voice_id}>
-                  {voice.name}
+                  {formatVoiceName(voice)}
                 </option>
               ))}
             </select>
@@ -157,7 +183,7 @@ export const PreferencesPanel = ({
               <option value="">None (single speaker)</option>
               {voices.map((voice) => (
                 <option key={voice.voice_id} value={voice.voice_id}>
-                  {voice.name}
+                  {formatVoiceName(voice)}
                 </option>
               ))}
             </select>

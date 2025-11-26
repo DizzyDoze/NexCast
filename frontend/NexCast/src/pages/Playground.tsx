@@ -23,7 +23,7 @@ export const Playground = () => {
     speaker2_voice_id: 'gU0LNdkMOQCOrPrwtbee', // British Announcer (default)
     capture_interval: 10000,
     player_name: '',
-    context: 'Professional esports commentary for a competitive gaming match. Provide exciting, insightful analysis of gameplay, strategy, and player performance.',
+    context: 'A professional esports player competing in a major tournament with thousands of viewers watching live.',
   });
 
   // Screen capture hook
