@@ -36,6 +36,7 @@ provider:
       allowedOrigins:
         - https://localhost:5173
         - http://localhost:5173
+        - https://nexcast.club
       allowedHeaders:
         - Content-Type
         - Authorization

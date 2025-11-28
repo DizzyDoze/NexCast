@@ -1,6 +1,7 @@
 import { useAuth } from 'react-oidc-context'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { setAuthToken } from './services/api'
 import { SideBar } from './components/SideBar'
 import Playground from './pages/Playground'
@@ -31,6 +32,7 @@ function AuthenticatedApp() {
 
 function App() {
   const auth = useAuth()
+  const [isCaptchaVerified, setIsCaptchaVerified] = useState(false)
 
   // Set auth token when user is authenticated
   useEffect(() => {
@@ -54,18 +56,45 @@ function App() {
   }
 
   return (
-    // back ground gradiant color, from bottom left to the other side
     <div className="h-screen w-screen bg-linear-to-bl from-gray-100 to-gray-800 flex items-center justify-center">
       <div className="w-full max-w-md mx-4 bg-gray-800 rounded-xl shadow-lg border border-gray-200 p-8 text-center">
-        <div className="mb-3">
+        <div className="mb-6">
           <h1 className="text-4xl font-bold text-gray-100 mb-1">NexCast</h1>
           <p className="text-xl text-gray-100">Live Gaming Commentary</p>
         </div>
+
+        {/* Turnstile Captcha Widget */}
+        <div className="mb-6 flex justify-center">
+          <Turnstile
+            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+            options={{
+              theme: 'dark',
+            }}
+            onSuccess={(token) => {
+              console.log('Turnstile verification successful:', token)
+              setIsCaptchaVerified(true)
+            }}
+            onError={() => {
+              console.error('Turnstile verification failed')
+              setIsCaptchaVerified(false)
+            }}
+            onExpire={() => {
+              console.log('Turnstile token expired')
+              setIsCaptchaVerified(false)
+            }}
+          />
+        </div>
+
         <button
-          className="w-full bg-gray-800 hover:bg-gray-800 text-gray-100 font-medium py-3 px-6 rounded-lg transition-colors"
-          onClick={() => auth.signinRedirect()}
+          className={`w-full font-medium py-3 px-6 rounded-lg transition-colors ${
+            isCaptchaVerified
+              ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+              : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+          }`}
+          onClick={() => isCaptchaVerified && auth.signinRedirect()}
+          disabled={!isCaptchaVerified}
         >
-          Sign In with Cognito
+          {isCaptchaVerified ? 'Sign In with Cognito' : 'Complete Captcha to Sign In'}
         </button>
       </div>
     </div>

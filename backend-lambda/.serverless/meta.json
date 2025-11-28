@@ -1,6 +1,6 @@
 {
   "/Users/yj/Workspaces/NexCast/backend-lambda/serverless.yml": {
-    "versionFramework": "4.23.0",
+    "versionFramework": "4.25.0",
     "servicePath": "/Users/yj/Workspaces/NexCast/backend-lambda/serverless.yml",
     "serviceConfigFileName": "serverless.yml",
     "service": {
@@ -47,7 +47,8 @@
           "cors": {
             "allowedOrigins": [
               "https://localhost:5173",
-              "http://localhost:5173"
+              "http://localhost:5173",
+              "https://nexcast.club"
             ],
             "allowedHeaders": [
               "Content-Type",
@@ -212,7 +213,7 @@
               "Properties": {
                 "Code": {
                   "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
-                  "S3Key": "serverless/NexCast/dev/1763326437999-2025-11-16T20:53:57.999Z/NexCast.zip"
+                  "S3Key": "serverless/NexCast/dev/1764304711695-2025-11-28T04:38:31.695Z/NexCast.zip"
                 },
                 "Handler": "functions/health.handler",
                 "Runtime": "python3.11",
@@ -252,7 +253,7 @@
               "Properties": {
                 "Code": {
                   "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
-                  "S3Key": "serverless/NexCast/dev/1763326437999-2025-11-16T20:53:57.999Z/NexCast.zip"
+                  "S3Key": "serverless/NexCast/dev/1764304711695-2025-11-28T04:38:31.695Z/NexCast.zip"
                 },
                 "Handler": "functions/session.handler",
                 "Runtime": "python3.11",
@@ -292,7 +293,7 @@
               "Properties": {
                 "Code": {
                   "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
-                  "S3Key": "serverless/NexCast/dev/1763326437999-2025-11-16T20:53:57.999Z/NexCast.zip"
+                  "S3Key": "serverless/NexCast/dev/1764304711695-2025-11-28T04:38:31.695Z/NexCast.zip"
                 },
                 "Handler": "functions/history.handler",
                 "Runtime": "python3.11",
@@ -327,34 +328,34 @@
                 "HistoryLogGroup"
               ]
             },
-            "HealthLambdaVersionoioYIwfOXaoKC8L5zGRNzixpKllASZS4PdRJsLghrg": {
+            "HealthLambdaVersion5Gz7n5jWnKbj9iAhRNbMuAxnYYDFQj5xcQ3WTxYylQ": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "HealthLambdaFunction"
                 },
-                "CodeSha256": "3qLk4Ee0DgiIH9C0gsdl0vWxwDNEHfrF6Xc23Zqjqfg="
+                "CodeSha256": "JhTkrEBBMvDuCbFuJAim/KQxwm2Gc1At5TpRH2v3hBE="
               }
             },
-            "SessionLambdaVersionWfNR8mkMDPklaNv2weB3JyWFKeVPCrn0Jprboc344": {
+            "SessionLambdaVersionN20XjxiyYHs9pmP2XDpBHRiBWjUKgESzWju1ZiHk": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "SessionLambdaFunction"
                 },
-                "CodeSha256": "3qLk4Ee0DgiIH9C0gsdl0vWxwDNEHfrF6Xc23Zqjqfg="
+                "CodeSha256": "JhTkrEBBMvDuCbFuJAim/KQxwm2Gc1At5TpRH2v3hBE="
               }
             },
-            "HistoryLambdaVersionmjGPVnMvc9l4Ceg5af9XvAdysMvABFoEC2Zl8I15UI": {
+            "HistoryLambdaVersionEG6eqdsmbHm3rriNk95kLCAXUq37P13a17vxlbLNsrg": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "HistoryLambdaFunction"
                 },
-                "CodeSha256": "3qLk4Ee0DgiIH9C0gsdl0vWxwDNEHfrF6Xc23Zqjqfg="
+                "CodeSha256": "JhTkrEBBMvDuCbFuJAim/KQxwm2Gc1At5TpRH2v3hBE="
               }
             },
             "HttpApi": {
@@ -380,7 +381,8 @@
                   ],
                   "AllowOrigins": [
                     "https://localhost:5173",
-                    "http://localhost:5173"
+                    "http://localhost:5173",
+                    "https://nexcast.club"
                   ],
                   "MaxAge": 300
                 }
@@ -752,7 +754,7 @@
             "HealthLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "HealthLambdaVersionoioYIwfOXaoKC8L5zGRNzixpKllASZS4PdRJsLghrg"
+                "Ref": "HealthLambdaVersion5Gz7n5jWnKbj9iAhRNbMuAxnYYDFQj5xcQ3WTxYylQ"
               },
               "Export": {
                 "Name": "sls-NexCast-dev-HealthLambdaFunctionQualifiedArn"
@@ -761,7 +763,7 @@
             "SessionLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "SessionLambdaVersionWfNR8mkMDPklaNv2weB3JyWFKeVPCrn0Jprboc344"
+                "Ref": "SessionLambdaVersionN20XjxiyYHs9pmP2XDpBHRiBWjUKgESzWju1ZiHk"
               },
               "Export": {
                 "Name": "sls-NexCast-dev-SessionLambdaFunctionQualifiedArn"
@@ -770,7 +772,7 @@
             "HistoryLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "HistoryLambdaVersionmjGPVnMvc9l4Ceg5af9XvAdysMvABFoEC2Zl8I15UI"
+                "Ref": "HistoryLambdaVersionEG6eqdsmbHm3rriNk95kLCAXUq37P13a17vxlbLNsrg"
               },
               "Export": {
                 "Name": "sls-NexCast-dev-HistoryLambdaFunctionQualifiedArn"
@@ -839,7 +841,7 @@
           "timeout": 6,
           "runtime": "python3.11",
           "vpc": {},
-          "versionLogicalId": "HealthLambdaVersionoioYIwfOXaoKC8L5zGRNzixpKllASZS4PdRJsLghrg"
+          "versionLogicalId": "HealthLambdaVersion5Gz7n5jWnKbj9iAhRNbMuAxnYYDFQj5xcQ3WTxYylQ"
         },
         "session": {
           "handler": "functions/session.handler",
@@ -887,7 +889,7 @@
           "timeout": 6,
           "runtime": "python3.11",
           "vpc": {},
-          "versionLogicalId": "SessionLambdaVersionWfNR8mkMDPklaNv2weB3JyWFKeVPCrn0Jprboc344"
+          "versionLogicalId": "SessionLambdaVersionN20XjxiyYHs9pmP2XDpBHRiBWjUKgESzWju1ZiHk"
         },
         "history": {
           "handler": "functions/history.handler",
@@ -924,7 +926,7 @@
           "timeout": 6,
           "runtime": "python3.11",
           "vpc": {},
-          "versionLogicalId": "HistoryLambdaVersionmjGPVnMvc9l4Ceg5af9XvAdysMvABFoEC2Zl8I15UI"
+          "versionLogicalId": "HistoryLambdaVersionEG6eqdsmbHm3rriNk95kLCAXUq37P13a17vxlbLNsrg"
         }
       },
       "custom": {
@@ -974,7 +976,8 @@
         "cors": {
           "allowedOrigins": [
             "https://localhost:5173",
-            "http://localhost:5173"
+            "http://localhost:5173",
+            "https://nexcast.club"
           ],
           "allowedHeaders": [
             "Content-Type",
@@ -1139,7 +1142,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
-                "S3Key": "serverless/NexCast/dev/1763326437999-2025-11-16T20:53:57.999Z/NexCast.zip"
+                "S3Key": "serverless/NexCast/dev/1764304711695-2025-11-28T04:38:31.695Z/NexCast.zip"
               },
               "Handler": "functions/health.handler",
               "Runtime": "python3.11",
@@ -1179,7 +1182,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
-                "S3Key": "serverless/NexCast/dev/1763326437999-2025-11-16T20:53:57.999Z/NexCast.zip"
+                "S3Key": "serverless/NexCast/dev/1764304711695-2025-11-28T04:38:31.695Z/NexCast.zip"
               },
               "Handler": "functions/session.handler",
               "Runtime": "python3.11",
@@ -1219,7 +1222,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
-                "S3Key": "serverless/NexCast/dev/1763326437999-2025-11-16T20:53:57.999Z/NexCast.zip"
+                "S3Key": "serverless/NexCast/dev/1764304711695-2025-11-28T04:38:31.695Z/NexCast.zip"
               },
               "Handler": "functions/history.handler",
               "Runtime": "python3.11",
@@ -1254,34 +1257,34 @@
               "HistoryLogGroup"
             ]
           },
-          "HealthLambdaVersionoioYIwfOXaoKC8L5zGRNzixpKllASZS4PdRJsLghrg": {
+          "HealthLambdaVersion5Gz7n5jWnKbj9iAhRNbMuAxnYYDFQj5xcQ3WTxYylQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "HealthLambdaFunction"
               },
-              "CodeSha256": "3qLk4Ee0DgiIH9C0gsdl0vWxwDNEHfrF6Xc23Zqjqfg="
+              "CodeSha256": "JhTkrEBBMvDuCbFuJAim/KQxwm2Gc1At5TpRH2v3hBE="
             }
           },
-          "SessionLambdaVersionWfNR8mkMDPklaNv2weB3JyWFKeVPCrn0Jprboc344": {
+          "SessionLambdaVersionN20XjxiyYHs9pmP2XDpBHRiBWjUKgESzWju1ZiHk": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "SessionLambdaFunction"
               },
-              "CodeSha256": "3qLk4Ee0DgiIH9C0gsdl0vWxwDNEHfrF6Xc23Zqjqfg="
+              "CodeSha256": "JhTkrEBBMvDuCbFuJAim/KQxwm2Gc1At5TpRH2v3hBE="
             }
           },
-          "HistoryLambdaVersionmjGPVnMvc9l4Ceg5af9XvAdysMvABFoEC2Zl8I15UI": {
+          "HistoryLambdaVersionEG6eqdsmbHm3rriNk95kLCAXUq37P13a17vxlbLNsrg": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "HistoryLambdaFunction"
               },
-              "CodeSha256": "3qLk4Ee0DgiIH9C0gsdl0vWxwDNEHfrF6Xc23Zqjqfg="
+              "CodeSha256": "JhTkrEBBMvDuCbFuJAim/KQxwm2Gc1At5TpRH2v3hBE="
             }
           },
           "HttpApi": {
@@ -1307,7 +1310,8 @@
                 ],
                 "AllowOrigins": [
                   "https://localhost:5173",
-                  "http://localhost:5173"
+                  "http://localhost:5173",
+                  "https://nexcast.club"
                 ],
                 "MaxAge": 300
               }
@@ -1679,7 +1683,7 @@
           "HealthLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "HealthLambdaVersionoioYIwfOXaoKC8L5zGRNzixpKllASZS4PdRJsLghrg"
+              "Ref": "HealthLambdaVersion5Gz7n5jWnKbj9iAhRNbMuAxnYYDFQj5xcQ3WTxYylQ"
             },
             "Export": {
               "Name": "sls-NexCast-dev-HealthLambdaFunctionQualifiedArn"
@@ -1688,7 +1692,7 @@
           "SessionLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "SessionLambdaVersionWfNR8mkMDPklaNv2weB3JyWFKeVPCrn0Jprboc344"
+              "Ref": "SessionLambdaVersionN20XjxiyYHs9pmP2XDpBHRiBWjUKgESzWju1ZiHk"
             },
             "Export": {
               "Name": "sls-NexCast-dev-SessionLambdaFunctionQualifiedArn"
@@ -1697,7 +1701,7 @@
           "HistoryLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "HistoryLambdaVersionmjGPVnMvc9l4Ceg5af9XvAdysMvABFoEC2Zl8I15UI"
+              "Ref": "HistoryLambdaVersionEG6eqdsmbHm3rriNk95kLCAXUq37P13a17vxlbLNsrg"
             },
             "Export": {
               "Name": "sls-NexCast-dev-HistoryLambdaFunctionQualifiedArn"
@@ -1753,7 +1757,7 @@
       "serviceProvider": null,
       "instanceParameters": null
     },
-    "serviceRawFile": "# \"org\" ensures this Service is used with the correct Serverless Framework Access Key.\norg: neuralripper\n# \"app\" enables Serverless Framework Dashboard features and sharing them with other Services.\napp: nexcast-lambda\n# \"service\" is the name of this project. This will also be added to your AWS resource names.\nservice: NexCast\n\nprovider:\n  name: aws\n  runtime: python3.11\n  region: us-east-1\n  environment:\n    DB_HOST: ${env:DB_HOST}\n    DB_NAME: ${env:DB_NAME}\n    DB_USER: ${env:DB_USER}\n    DB_PASSWORD: ${env:DB_PASSWORD}\n    DB_PORT: ${env:DB_PORT, '5432'}\n    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}\n    COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}\n    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME}\n  iam:\n    role:\n      statements:\n        - Effect: Allow\n          Action:\n            - cognito-idp:*\n          Resource: \"*\"\n        - Effect: Allow\n          Action:\n            - s3:PutObject\n            - s3:GetObject\n            - s3:DeleteObject\n          Resource: \"arn:aws:s3:::${env:S3_BUCKET_NAME}/*\"\n  httpApi:\n    cors:\n      allowedOrigins:\n        - https://localhost:5173\n        - http://localhost:5173\n      allowedHeaders:\n        - Content-Type\n        - Authorization\n        - X-Amz-Date\n        - X-Api-Key\n        - X-Amz-Security-Token\n      allowedMethods:\n        - GET\n        - POST\n        - PUT\n        - DELETE\n        - OPTIONS\n      allowCredentials: true\n      maxAge: 300\n    authorizers:\n      cognitoAuthorizer:\n        type: jwt\n        identitySource: $request.header.Authorization\n        issuerUrl: https://cognito-idp.us-east-1.amazonaws.com/${env:COGNITO_USER_POOL_ID}\n        audience:\n          - ${env:COGNITO_CLIENT_ID}\n\nfunctions:\n  health:\n    handler: functions/health.handler\n    layers:\n      - { Ref: PythonRequirementsLambdaLayer }\n    events:\n      - httpApi:\n          path: /health\n          method: get\n\n  session:\n    handler: functions/session.handler\n    layers:\n      - { Ref: PythonRequirementsLambdaLayer }\n    events:\n      - httpApi:\n          path: /session/{proxy+}\n          method: OPTIONS\n      - httpApi:\n          path: /session/{proxy+}\n          method: POST\n          authorizer:\n            name: cognitoAuthorizer\n      - httpApi:\n          path: /session/{proxy+}\n          method: GET\n          authorizer:\n            name: cognitoAuthorizer\n\n  history:\n    handler: functions/history.handler\n    layers:\n      - { Ref: PythonRequirementsLambdaLayer }\n    events:\n      - httpApi:\n          path: /history/{proxy+}\n          method: OPTIONS\n      - httpApi:\n          path: /history/{proxy+}\n          method: GET\n          authorizer:\n            name: cognitoAuthorizer\n\ncustom:\n  pythonRequirements:\n    dockerizePip: false\n    layer: true\n",
+    "serviceRawFile": "# \"org\" ensures this Service is used with the correct Serverless Framework Access Key.\norg: neuralripper\n# \"app\" enables Serverless Framework Dashboard features and sharing them with other Services.\napp: nexcast-lambda\n# \"service\" is the name of this project. This will also be added to your AWS resource names.\nservice: NexCast\n\nprovider:\n  name: aws\n  runtime: python3.11\n  region: us-east-1\n  environment:\n    DB_HOST: ${env:DB_HOST}\n    DB_NAME: ${env:DB_NAME}\n    DB_USER: ${env:DB_USER}\n    DB_PASSWORD: ${env:DB_PASSWORD}\n    DB_PORT: ${env:DB_PORT, '5432'}\n    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}\n    COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}\n    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME}\n  iam:\n    role:\n      statements:\n        - Effect: Allow\n          Action:\n            - cognito-idp:*\n          Resource: \"*\"\n        - Effect: Allow\n          Action:\n            - s3:PutObject\n            - s3:GetObject\n            - s3:DeleteObject\n          Resource: \"arn:aws:s3:::${env:S3_BUCKET_NAME}/*\"\n  httpApi:\n    cors:\n      allowedOrigins:\n        - https://localhost:5173\n        - http://localhost:5173\n        - https://nexcast.club\n      allowedHeaders:\n        - Content-Type\n        - Authorization\n        - X-Amz-Date\n        - X-Api-Key\n        - X-Amz-Security-Token\n      allowedMethods:\n        - GET\n        - POST\n        - PUT\n        - DELETE\n        - OPTIONS\n      allowCredentials: true\n      maxAge: 300\n    authorizers:\n      cognitoAuthorizer:\n        type: jwt\n        identitySource: $request.header.Authorization\n        issuerUrl: https://cognito-idp.us-east-1.amazonaws.com/${env:COGNITO_USER_POOL_ID}\n        audience:\n          - ${env:COGNITO_CLIENT_ID}\n\nfunctions:\n  health:\n    handler: functions/health.handler\n    layers:\n      - { Ref: PythonRequirementsLambdaLayer }\n    events:\n      - httpApi:\n          path: /health\n          method: get\n\n  session:\n    handler: functions/session.handler\n    layers:\n      - { Ref: PythonRequirementsLambdaLayer }\n    events:\n      - httpApi:\n          path: /session/{proxy+}\n          method: OPTIONS\n      - httpApi:\n          path: /session/{proxy+}\n          method: POST\n          authorizer:\n            name: cognitoAuthorizer\n      - httpApi:\n          path: /session/{proxy+}\n          method: GET\n          authorizer:\n            name: cognitoAuthorizer\n\n  history:\n    handler: functions/history.handler\n    layers:\n      - { Ref: PythonRequirementsLambdaLayer }\n    events:\n      - httpApi:\n          path: /history/{proxy+}\n          method: OPTIONS\n      - httpApi:\n          path: /history/{proxy+}\n          method: GET\n          authorizer:\n            name: cognitoAuthorizer\n\ncustom:\n  pythonRequirements:\n    dockerizePip: false\n    layer: true\n",
     "command": [
       "deploy"
     ],
@@ -1766,7 +1770,7 @@
     "serviceProviderAwsCfStackName": "NexCast-dev",
     "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:970547374353:stack/NexCast-dev/806110c0-c0f9-11f0-a883-0affc97cb451",
     "serviceProviderAwsCfStackCreated": "2025-11-14T01:30:28.297Z",
-    "serviceProviderAwsCfStackUpdated": "2025-11-15T04:05:35.381Z",
+    "serviceProviderAwsCfStackUpdated": "2025-11-16T20:54:03.227Z",
     "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
     "serviceProviderAwsCfStackOutputs": [
       {
@@ -1777,7 +1781,7 @@
       },
       {
         "OutputKey": "SessionLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:function:NexCast-dev-session:7",
+        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:function:NexCast-dev-session:8",
         "Description": "Current Lambda function version",
         "ExportName": "sls-NexCast-dev-SessionLambdaFunctionQualifiedArn"
       },
@@ -1789,13 +1793,13 @@
       },
       {
         "OutputKey": "HealthLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:function:NexCast-dev-health:7",
+        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:function:NexCast-dev-health:8",
         "Description": "Current Lambda function version",
         "ExportName": "sls-NexCast-dev-HealthLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "HistoryLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:function:NexCast-dev-history:7",
+        "OutputValue": "arn:aws:lambda:us-east-1:970547374353:function:NexCast-dev-history:8",
         "Description": "Current Lambda function version",
         "ExportName": "sls-NexCast-dev-HistoryLambdaFunctionQualifiedArn"
       },
@@ -1958,7 +1962,7 @@
           "Properties": {
             "Code": {
               "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
-              "S3Key": "serverless/NexCast/dev/1763326437999-2025-11-16T20:53:57.999Z/NexCast.zip"
+              "S3Key": "serverless/NexCast/dev/1764304711695-2025-11-28T04:38:31.695Z/NexCast.zip"
             },
             "Handler": "functions/health.handler",
             "Runtime": "python3.11",
@@ -1998,7 +2002,7 @@
           "Properties": {
             "Code": {
               "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
-              "S3Key": "serverless/NexCast/dev/1763326437999-2025-11-16T20:53:57.999Z/NexCast.zip"
+              "S3Key": "serverless/NexCast/dev/1764304711695-2025-11-28T04:38:31.695Z/NexCast.zip"
             },
             "Handler": "functions/session.handler",
             "Runtime": "python3.11",
@@ -2038,7 +2042,7 @@
           "Properties": {
             "Code": {
               "S3Bucket": "serverless-framework-deployments-us-east-1-b97bf4eb-5f06",
-              "S3Key": "serverless/NexCast/dev/1763326437999-2025-11-16T20:53:57.999Z/NexCast.zip"
+              "S3Key": "serverless/NexCast/dev/1764304711695-2025-11-28T04:38:31.695Z/NexCast.zip"
             },
             "Handler": "functions/history.handler",
             "Runtime": "python3.11",
@@ -2073,34 +2077,34 @@
             "HistoryLogGroup"
           ]
         },
-        "HealthLambdaVersionoioYIwfOXaoKC8L5zGRNzixpKllASZS4PdRJsLghrg": {
+        "HealthLambdaVersion5Gz7n5jWnKbj9iAhRNbMuAxnYYDFQj5xcQ3WTxYylQ": {
           "Type": "AWS::Lambda::Version",
           "DeletionPolicy": "Retain",
           "Properties": {
             "FunctionName": {
               "Ref": "HealthLambdaFunction"
             },
-            "CodeSha256": "3qLk4Ee0DgiIH9C0gsdl0vWxwDNEHfrF6Xc23Zqjqfg="
+            "CodeSha256": "JhTkrEBBMvDuCbFuJAim/KQxwm2Gc1At5TpRH2v3hBE="
           }
         },
-        "SessionLambdaVersionWfNR8mkMDPklaNv2weB3JyWFKeVPCrn0Jprboc344": {
+        "SessionLambdaVersionN20XjxiyYHs9pmP2XDpBHRiBWjUKgESzWju1ZiHk": {
           "Type": "AWS::Lambda::Version",
           "DeletionPolicy": "Retain",
           "Properties": {
             "FunctionName": {
               "Ref": "SessionLambdaFunction"
             },
-            "CodeSha256": "3qLk4Ee0DgiIH9C0gsdl0vWxwDNEHfrF6Xc23Zqjqfg="
+            "CodeSha256": "JhTkrEBBMvDuCbFuJAim/KQxwm2Gc1At5TpRH2v3hBE="
           }
         },
-        "HistoryLambdaVersionmjGPVnMvc9l4Ceg5af9XvAdysMvABFoEC2Zl8I15UI": {
+        "HistoryLambdaVersionEG6eqdsmbHm3rriNk95kLCAXUq37P13a17vxlbLNsrg": {
           "Type": "AWS::Lambda::Version",
           "DeletionPolicy": "Retain",
           "Properties": {
             "FunctionName": {
               "Ref": "HistoryLambdaFunction"
             },
-            "CodeSha256": "3qLk4Ee0DgiIH9C0gsdl0vWxwDNEHfrF6Xc23Zqjqfg="
+            "CodeSha256": "JhTkrEBBMvDuCbFuJAim/KQxwm2Gc1At5TpRH2v3hBE="
           }
         },
         "HttpApi": {
@@ -2126,7 +2130,8 @@
               ],
               "AllowOrigins": [
                 "https://localhost:5173",
-                "http://localhost:5173"
+                "http://localhost:5173",
+                "https://nexcast.club"
               ],
               "MaxAge": 300
             }
@@ -2498,7 +2503,7 @@
         "HealthLambdaFunctionQualifiedArn": {
           "Description": "Current Lambda function version",
           "Value": {
-            "Ref": "HealthLambdaVersionoioYIwfOXaoKC8L5zGRNzixpKllASZS4PdRJsLghrg"
+            "Ref": "HealthLambdaVersion5Gz7n5jWnKbj9iAhRNbMuAxnYYDFQj5xcQ3WTxYylQ"
           },
           "Export": {
             "Name": "sls-NexCast-dev-HealthLambdaFunctionQualifiedArn"
@@ -2507,7 +2512,7 @@
         "SessionLambdaFunctionQualifiedArn": {
           "Description": "Current Lambda function version",
           "Value": {
-            "Ref": "SessionLambdaVersionWfNR8mkMDPklaNv2weB3JyWFKeVPCrn0Jprboc344"
+            "Ref": "SessionLambdaVersionN20XjxiyYHs9pmP2XDpBHRiBWjUKgESzWju1ZiHk"
           },
           "Export": {
             "Name": "sls-NexCast-dev-SessionLambdaFunctionQualifiedArn"
@@ -2516,7 +2521,7 @@
         "HistoryLambdaFunctionQualifiedArn": {
           "Description": "Current Lambda function version",
           "Value": {
-            "Ref": "HistoryLambdaVersionmjGPVnMvc9l4Ceg5af9XvAdysMvABFoEC2Zl8I15UI"
+            "Ref": "HistoryLambdaVersionEG6eqdsmbHm3rriNk95kLCAXUq37P13a17vxlbLNsrg"
           },
           "Export": {
             "Name": "sls-NexCast-dev-HistoryLambdaFunctionQualifiedArn"

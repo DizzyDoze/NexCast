@@ -1,7 +1,15 @@
+import { useAuth } from 'react-oidc-context';
+
 export const About = () => {
+  const auth = useAuth();
+
   const handleSignOut = async () => {
+    // Clear local auth state first
+    await auth.removeUser();
+
+    // Then redirect to Cognito logout to clear server session
     const clientId = import.meta.env.VITE_COGNITO_CLIENT_ID;
-    const logoutUri = `${window.location.origin}/`;
+    const logoutUri = window.location.origin;
     const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN;
     window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(
       logoutUri
