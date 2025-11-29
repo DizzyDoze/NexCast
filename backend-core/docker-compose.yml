@@ -1,0 +1,19 @@
+services:
+  nexcast-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nexcast-backend:latest
+    container_name: nexcast-ws
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount credentials from host (provided by EC2 user data script)
+      - /opt/nexcast/credentials:/app/credentials:ro
+    environment:
+      # These will be passed via command line or .env in production
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - XAI_API_KEY=${XAI_API_KEY}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/google-credentials.json
+    restart: unless-stopped

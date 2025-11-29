@@ -1,0 +1,32 @@
+services:
+  backend:
+    image: 970547374353.dkr.ecr.us-east-1.amazonaws.com/nexcast-backend:latest
+    container_name: nexcast-backend
+    volumes:
+      - /opt/nexcast/credentials:/app/credentials:ro
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - XAI_API_KEY=${XAI_API_KEY}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/google-credentials.json
+    restart: unless-stopped
+    networks:
+      - nexcast-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: nexcast-nginx
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - nexcast-net
+
+networks:
+  nexcast-net:
+    driver: bridge
