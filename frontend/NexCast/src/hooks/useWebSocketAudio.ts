@@ -35,7 +35,8 @@ export const useWebSocketAudio = (): UseWebSocketAudioReturn => {
     }, []);
 
     const connect = useCallback((sessionId: number, preferences: SessionPreferences) => {
-            const ws = new WebSocket(`ws://localhost:8000/ws/${sessionId}`);
+            const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws';
+            const ws = new WebSocket(`${wsUrl}/${sessionId}`);
             wsRef.current = ws;
 
             ws.onopen = () => {
