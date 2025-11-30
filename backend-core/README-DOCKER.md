@@ -1,5 +1,22 @@
 # Docker Deployment Guide
 
+## 🏗️ Architecture
+
+**Production Setup:**
+```
+Internet (HTTPS/WSS)
+    ↓
+Nginx Container (port 443) - SSL termination
+    ↓
+FastAPI Backend Container (port 8000) - WebSocket server
+```
+
+**Two-container architecture:**
+- **nginx:** Handles SSL with Let's Encrypt, proxies to backend
+- **backend:** FastAPI WebSocket server with AI services
+
+---
+
 ## 🛠️ Local Development
 
 ### Setup
@@ -28,7 +45,7 @@ docker compose -f docker-compose.dev.yml down
 
 ---
 
-## 🚀 Production (EC2)
+## 🚀 Production (EC2 with docker-compose)
 
 ### Build and Push to ECR
 ```bash
@@ -48,66 +65,201 @@ docker build --platform linux/amd64 -t $REPO_URI:latest .
 docker push $REPO_URI:latest
 ```
 
-### EC2 Launch (Manual via Console)
-1. **AMI:** Ubuntu 24.04 LTS
-2. **Instance Type:** t2.medium
-3. **Security Group:** Allow port 8000 + 22
-4. **IAM Role:** `AmazonEC2ContainerRegistryReadOnly` + `SecretsManagerReadWrite`
-5. **User Data:**
+### Prerequisites (One-time EC2 Setup)
+
+1. **Launch EC2 Instance:**
+   - **AMI:** Ubuntu 24.04 LTS
+   - **Instance Type:** t2.medium (or t2.micro for free tier)
+   - **Security Group:** Allow port 443 (HTTPS) + 22 (SSH)
+   - **IAM Role:** `AmazonEC2ContainerRegistryReadOnly` + `SecretsManagerReadWrite`
+
+2. **Install Dependencies:**
+   ```bash
+   sudo apt-get update
+   sudo apt-get install -y docker.io docker-compose-v2 awscli jq certbot
+   sudo systemctl start docker
+   sudo systemctl enable docker
+   sudo usermod -aG docker ubuntu
+   newgrp docker
+   ```
+
+3. **Get Let's Encrypt SSL Certificate:**
+   ```bash
+   sudo certbot certonly --standalone -d api.nexcast.club \
+       --non-interactive --agree-tos --email your-email@example.com
+   ```
+
+   **Certificate location:**
+   - `/etc/letsencrypt/live/api.nexcast.club/fullchain.pem`
+   - `/etc/letsencrypt/live/api.nexcast.club/privkey.pem`
+
+### Quick Launch (Automated)
+
+**Use the launch script for one-command deployment:**
 
 ```bash
-#!/bin/bash
-set -e
+# Download and run
+curl -O https://raw.githubusercontent.com/DizzyDoze/NexCast/main/backend-core/deploy/launch.sh
+chmod +x launch.sh
+./launch.sh
+```
 
-apt-get update
-apt-get install -y docker.io awscli jq
+**What it does:**
+1. Cleans old containers and images
+2. Logs into AWS ECR
+3. Pulls secrets from Secrets Manager
+4. Creates `.env`, `nginx.conf`, `docker-compose.prod.yml`
+5. Pulls latest images
+6. Starts nginx + backend containers
+7. Tests health endpoint
 
-systemctl start docker
-systemctl enable docker
+### Manual Deployment (Step-by-Step)
 
-REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/region)
-ACCOUNT_ID=<YOUR_ACCOUNT_ID>
+```bash
+# 1. Create project directory
+mkdir -p ~/nexcast && cd ~/nexcast
 
-# Login to ECR
+# 2. Login to ECR
+REGION=us-east-1
+ACCOUNT_ID=970547374353
 aws ecr get-login-password --region $REGION | \
     docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
 
-# Pull secrets
+# 3. Get secrets and create .env
 SECRET_JSON=$(aws secretsmanager get-secret-value \
     --secret-id nexcast-secrets \
     --region $REGION \
     --query SecretString \
     --output text)
 
-GEMINI_KEY=$(echo $SECRET_JSON | jq -r '.GEMINI_API_KEY')
-XAI_KEY=$(echo $SECRET_JSON | jq -r '.XAI_API_KEY')
-ELEVENLABS_KEY=$(echo $SECRET_JSON | jq -r '.ELEVENLABS_API_KEY')
+cat > .env <<EOF
+GEMINI_API_KEY=$(echo $SECRET_JSON | jq -r '.GEMINI_API_KEY')
+XAI_API_KEY=$(echo $SECRET_JSON | jq -r '.XAI_API_KEY')
+ELEVENLABS_API_KEY=$(echo $SECRET_JSON | jq -r '.ELEVENLABS_API_KEY')
+EOF
+
+# 4. Setup Google credentials
 GOOGLE_CREDS=$(echo $SECRET_JSON | jq -r '.GOOGLE_APPLICATION_CREDENTIALS_JSON')
+sudo mkdir -p /opt/nexcast/credentials
+echo "$GOOGLE_CREDS" | sudo tee /opt/nexcast/credentials/google-credentials.json > /dev/null
 
-# Setup credentials
-mkdir -p /opt/nexcast/credentials
-echo "$GOOGLE_CREDS" > /opt/nexcast/credentials/google-credentials.json
+# 5. Create nginx.conf
+cat > nginx.conf <<'EOF'
+server {
+    listen 443 ssl;
+    server_name api.nexcast.club;
 
-# Run container
-docker run -d \
-    --name nexcast-backend \
-    --restart unless-stopped \
-    -p 8000:8000 \
-    -v /opt/nexcast/credentials:/app/credentials:ro \
-    -e GEMINI_API_KEY="$GEMINI_KEY" \
-    -e XAI_API_KEY="$XAI_KEY" \
-    -e ELEVENLABS_API_KEY="$ELEVENLABS_KEY" \
-    -e GOOGLE_APPLICATION_CREDENTIALS="/app/credentials/google-credentials.json" \
-    $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/nexcast-backend:latest
+    ssl_certificate /etc/letsencrypt/live/api.nexcast.club/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.nexcast.club/privkey.pem;
+
+    location /ws/ {
+        proxy_pass http://backend:8000/ws/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_connect_timeout 7d;
+        proxy_send_timeout 7d;
+        proxy_read_timeout 7d;
+    }
+
+    location /health {
+        proxy_pass http://backend:8000/health;
+    }
+}
+EOF
+
+# 6. Create docker-compose.prod.yml
+cat > docker-compose.prod.yml <<EOF
+services:
+  backend:
+    image: $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/nexcast-backend:latest
+    container_name: nexcast-backend
+    volumes:
+      - /opt/nexcast/credentials:/app/credentials:ro
+    environment:
+      - GEMINI_API_KEY=\${GEMINI_API_KEY}
+      - XAI_API_KEY=\${XAI_API_KEY}
+      - ELEVENLABS_API_KEY=\${ELEVENLABS_API_KEY}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/google-credentials.json
+    restart: unless-stopped
+    networks:
+      - nexcast-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: nexcast-nginx
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - nexcast-net
+
+networks:
+  nexcast-net:
+    driver: bridge
+EOF
+
+# 7. Pull and start
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+
+# 8. Check status
+docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml logs -f
 ```
 
-### Alternative: SSH and Run Manually
-```bash
-# SSH into EC2
-ssh -i your-key.pem ubuntu@<PUBLIC_IP>
+---
 
-# Pull secrets and run (same commands as user data)
-# ... see user data script above
+---
+
+## 🔧 Production Management Commands
+
+```bash
+# View logs
+docker compose -f docker-compose.prod.yml logs -f
+
+# View specific container logs
+docker compose -f docker-compose.prod.yml logs -f backend
+docker compose -f docker-compose.prod.yml logs -f nginx
+
+# Restart services
+docker compose -f docker-compose.prod.yml restart
+
+# Stop services
+docker compose -f docker-compose.prod.yml down
+
+# Update to latest image
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+
+# Check container status
+docker compose -f docker-compose.prod.yml ps
+
+# Execute command in backend container
+docker exec -it nexcast-backend bash
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+# Test health endpoint (should return 200 OK)
+curl https://api.nexcast.club/health
+
+# Expected response:
+# {"status":"healthy","service":"nexcast-api"}
+
+# Test WebSocket connection (from browser console)
+const ws = new WebSocket('wss://api.nexcast.club/ws/123');
+ws.onopen = () => console.log('Connected!');
 ```
 
 ---
@@ -116,56 +268,92 @@ ssh -i your-key.pem ubuntu@<PUBLIC_IP>
 
 ```
 backend-core/
+├── deploy/
+│   └── launch.sh            # Automated EC2 deployment script
 ├── docker-compose.dev.yml   # Local development
-├── docker-compose.yml        # Production reference (not used on EC2)
-├── Dockerfile                # Production image
+├── docker-compose.prod.yml  # Production (created by launch.sh)
+├── Dockerfile               # Backend container image
+├── nginx.conf               # Nginx SSL proxy config (created by launch.sh)
 ├── .dockerignore
 ├── .env.example
 └── app/
+    ├── routes/
+    │   └── ws_stream.py     # WebSocket endpoint
+    ├── services/
+    │   ├── vision.py        # Gemini Vision
+    │   ├── llm.py           # Grok LLM
+    │   └── tts.py           # ElevenLabs TTS
     └── config/
-        ├── .env              # Local API keys (gitignored)
-        └── google-credentials.json  # Local Google creds (gitignored)
+        ├── .env             # Local API keys (gitignored)
+        └── google-credentials.json  # Local (gitignored)
 ```
 
 ---
 
-## 🔑 AWS Secrets Manager Keys
+## 🐛 Troubleshooting
 
-Add these to your `nexcast-secrets` secret:
-
-```json
-{
-  "GEMINI_API_KEY": "...",
-  "XAI_API_KEY": "...",
-  "ELEVENLABS_API_KEY": "...",
-  "GOOGLE_APPLICATION_CREDENTIALS_JSON": "{\"type\":\"service_account\",\"project_id\":\"...\",...}",
-  "VITE_WS_URL": "ws://<EC2_PUBLIC_IP>:8000/ws",
-  "VITE_COGNITO_USER_POOL_ID": "...",
-  "VITE_COGNITO_CLIENT_ID": "...",
-  "VITE_COGNITO_DOMAIN": "...",
-  "VITE_API_GATEWAY_URL": "...",
-  "VITE_ELEVENLABS_API_KEY": "...",
-  "VITE_TURNSTILE_SITE_KEY": "..."
-}
-```
-
----
-
-## 💡 Quick Commands
-
+### SSL Certificate Issues
 ```bash
-# Local dev
-docker compose -f docker-compose.dev.yml up --build
+# Check certificate status
+sudo certbot certificates
 
-# Build for production
-docker build --platform linux/amd64 -t nexcast-backend:latest .
+# Renew certificate manually
+sudo certbot renew
 
-# Test production image locally
-docker run -p 8000:8000 \
-  -e GEMINI_API_KEY="..." \
-  -e XAI_API_KEY="..." \
-  -e ELEVENLABS_API_KEY="..." \
-  -v $(pwd)/app/config/google-credentials.json:/app/credentials/google-credentials.json:ro \
-  -e GOOGLE_APPLICATION_CREDENTIALS="/app/credentials/google-credentials.json" \
-  nexcast-backend:latest
+# Restart nginx after renewal
+docker compose -f docker-compose.prod.yml restart nginx
 ```
+
+### Container Not Starting
+```bash
+# Check logs
+docker compose -f docker-compose.prod.yml logs
+
+# Check if ports are in use
+sudo lsof -i :443
+
+# Clean everything and restart
+docker compose -f docker-compose.prod.yml down
+docker system prune -af
+./launch.sh
+```
+
+### WebSocket Connection Failed
+```bash
+# Test nginx is running
+docker ps | grep nginx
+
+# Test backend is accessible from nginx
+docker exec nexcast-nginx wget -O- http://backend:8000/health
+
+# Check nginx config syntax
+docker exec nexcast-nginx nginx -t
+```
+
+---
+
+## 💰 Cost Optimization
+
+**When not using (stop EC2 to save money):**
+```bash
+# From your local machine
+aws ec2 stop-instances --instance-ids i-xxxxx
+
+# Next time: Start instance, SSH in, run ./launch.sh
+```
+
+**Estimated costs:**
+- **Running 24/7:** ~$24/month (t2.medium) or ~$8/month (t2.micro)
+- **5-day demo:** ~$5.50 (t2.medium)
+- **Stopped instance:** ~$1/month (EBS storage only)
+
+---
+
+## 🔐 Security Notes
+
+- nginx container runs as root (required for port 443)
+- Backend container runs as default user
+- Let's Encrypt certificates auto-renew via certbot cron
+- Secrets pulled from AWS Secrets Manager at launch
+- Google credentials mounted read-only
+- All inter-container communication via private bridge network
