@@ -177,6 +177,7 @@ name = "backend-ws"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "elevenlabs" },
     { name = "fastapi", extra = ["standard"] },
     { name = "google-cloud-texttospeech" },
     { name = "google-genai" },
@@ -188,6 +189,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "elevenlabs", specifier = ">=2.24.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.121.1" },
     { name = "google-cloud-texttospeech", specifier = ">=2.19.0" },
     { name = "google-genai", specifier = ">=1.0.0" },
@@ -316,6 +318,23 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/8c/8b/57666417c0f90f08bcafa776861060426765fdb422eb10212086fb811d26/dnspython-2.8.0.tar.gz", hash = "sha256:181d3c6996452cb1189c4046c61599b84a5a86e099562ffde77d26984ff26d0f", size = 368251, upload-time = "2025-09-07T18:58:00.022Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl", hash = "sha256:01d9bbc4a2d76bf0db7c1f729812ded6d912bd318d3b1cf81d30c0f845dbf3af", size = 331094, upload-time = "2025-09-07T18:57:58.071Z" },
+]
+
+[[package]]
+name = "elevenlabs"
+version = "2.24.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "pydantic-core" },
+    { name = "requests" },
+    { name = "typing-extensions" },
+    { name = "websockets" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/48/b8/7ef371670766a09169969531bd9cfb6c3bfebe55ae479d2f009cfff4b2f7/elevenlabs-2.24.0.tar.gz", hash = "sha256:bd5278ea8521aeb463ef4649192b5aa8cedf12be7f9b3ca19c79331a7d33d305", size = 418072, upload-time = "2025-11-21T09:15:34.916Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a7/52/a21ebfa6a2cadeb3b234a4bd92a59809fbbcbb6024ee2e48774f30daf8cf/elevenlabs-2.24.0-py3-none-any.whl", hash = "sha256:b8d0435f84a3bc0592dd086b4945bd79d9430c6892bf3f75752c03bb53ae3ad6", size = 1121523, upload-time = "2025-11-21T09:15:31.77Z" },
 ]
 
 [[package]]
