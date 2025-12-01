@@ -1,6 +1,10 @@
+![nexcast-arch](https://github.com/user-attachments/assets/b8311ef0-b24c-4cf9-a915-8c2c21011227)
+
 # NexCast
 
 Real-time AI-powered gaming commentary platform using multi-speaker text-to-speech with WebSocket audio streaming.
+
+
 
 ## Overview
 
